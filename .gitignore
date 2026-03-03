@@ -6,6 +6,7 @@ logs
 .actrc
 .vscode/*
 .devcontainer/*
+.test/*
 
 backend/.dev.vars
 backend/.wrangler

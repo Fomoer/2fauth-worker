@@ -5,6 +5,7 @@ import { tryParseJSON, base64ToBytes } from '@/shared/utils/encoding'
 import { gaMigrationStrategy } from '@/shared/utils/serializers/gauthStrategy'
 import { csvStrategy } from '@/shared/utils/serializers/csvStrategy'
 import { aegisStrategy } from '@/shared/utils/serializers/aegisStrategy'
+import protonStrategy from '@/shared/utils/serializers/protonStrategy'
 import { migrationError } from '@/shared/utils/errors/migrationError'
 import jsQR from 'jsqr'
 import initSqlJs from 'sql.js'
@@ -74,6 +75,7 @@ export const dataMigrationService = {
                 if (json.schemaVersion && Array.isArray(json.services)) return '2fas'
                 if (json.version === 1 && json.db && typeof json.db === 'object' && Array.isArray(json.db.entries)) return 'aegis' // Aegis unencrypted
                 if (json.version === 1 && json.header && json.db && typeof json.db === 'string') return 'aegis_encrypted'
+                if (json.version === 1 && typeof json.salt === 'string' && typeof json.content === 'string') return 'proton'
             }
         }
 
@@ -576,6 +578,13 @@ export const dataMigrationService = {
             rawVault = csvStrategy.parseCsv(content)
             content = JSON.stringify(rawVault)
             type = 'raw'
+        }
+
+        if (type === 'proton') {
+            rawVault = await protonStrategy.parse(content, password)
+            type = 'raw'
+            content = JSON.stringify(rawVault)
+            password = undefined
         }
 
         if (type === 'aegis_encrypted') {
