@@ -41,6 +41,7 @@
                     <el-tag type="info" effect="light"><icon2FAS /> 2FAS (.2fas)</el-tag>
                     <el-tag type="info" effect="light"><iconAegis /> Aegis (.json/.txt)</el-tag>
                     <el-tag type="info" effect="light"><iconBitwarden /> Bitwarden Auth (.json/.csv)</el-tag>
+                    <el-tag type="info" effect="light"><iconProtonAuth /> Proton Auth (.json)</el-tag>
                     <el-tag type="info" effect="light"><iconGoogleAuth /> Google Auth (.png/.jpg)</el-tag>
                     <el-tag type="info" effect="light"><iconMicrosoftAuth /> Microsoft Auth (PhoneFactor)</el-tag>
                   </div>
@@ -97,6 +98,7 @@
     <!-- 加密文件密码输入弹窗 -->
     <el-dialog v-model="showDecryptDialog" title="🔓 解密备份文件" width="400px" @close="handleDecryptDialogClose" destroy-on-close>
       <el-alert v-if="currentImportType === 'aegis_encrypted'" title="检测到 Aegis 加密备份" type="warning" :closable="false" style="margin-bottom: 15px;" />
+      <el-alert v-else-if="currentImportType === 'proton'" title="检测到 Proton Pass 加密备份" type="warning" :closable="false" style="margin-bottom: 15px;" />
       <el-alert v-else title="检测到本系统加密备份" type="success" :closable="false" style="margin-bottom: 15px;" />
       <el-form label-position="top" v-loading="isDecrypting" :element-loading-text="loadingText">
         <el-form-item label="请输入该备份的解密密码：">
@@ -121,6 +123,7 @@ import iconAegis from '@/shared/components/icons/iconAegis.vue'
 import iconGoogleAuth from '@/shared/components/icons/iconGoogleAuth.vue'
 import iconBitwarden from '@/shared/components/icons/iconBitwarden.vue'
 import iconMicrosoftAuth from '@/shared/components/icons/iconMicrosoftAuth.vue'
+import iconProtonAuth from '@/shared/components/icons/iconProtonAuth.vue'
 
 const emit = defineEmits(['success'])
 

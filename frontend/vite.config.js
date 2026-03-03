@@ -7,6 +7,8 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { execSync } from 'child_process'
+import wasm from 'vite-plugin-wasm'
+import topLevelAwait from 'vite-plugin-top-level-await'
 
 let commitHash = ''
 try {
@@ -18,6 +20,8 @@ try {
 export default defineConfig({
   plugins: [
     vue(),
+    wasm(),
+    topLevelAwait(),
     AutoImport({
       imports: ['vue', 'vue-router'],
       resolvers: [ElementPlusResolver({ importStyle: false })],

@@ -127,10 +127,9 @@ export function useVaultActions(fetchVault, vault) {
         showSecret.value = false
         showQrDialog.value = true
 
-        const algorithm = vaultItem.algorithm
-            ? vaultItem.algorithm.replace('SHA', 'SHA-').replace('SHA--', 'SHA-')
-            : 'SHA-1'
-        const uri = `otpauth://totp/${encodeURIComponent(vaultItem.service)}:${encodeURIComponent(vaultItem.account)}?secret=${vaultItem.secret}&issuer=${encodeURIComponent(vaultItem.service)}&algorithm=${algorithm}&digits=${vaultItem.digits || 6}&period=${vaultItem.period || 30}`
+        // otpauth URI spec: algorithm 参数不带横线，即 SHA1/SHA256/SHA512
+        const algorithm = (vaultItem.algorithm || 'SHA1').replace(/-/g, '').toUpperCase()
+        const uri = `otpauth://totp/${encodeURIComponent(vaultItem.service)}:${encodeURIComponent(vaultItem.account)}?secret=${encodeURIComponent(vaultItem.secret)}&issuer=${encodeURIComponent(vaultItem.service)}&algorithm=${algorithm}&digits=${vaultItem.digits || 6}&period=${vaultItem.period || 30}`
         qrCodeUrl.value = await QRCode.toDataURL(uri, { width: 240, margin: 1 })
     }
 
@@ -144,10 +143,8 @@ export function useVaultActions(fetchVault, vault) {
     const copyOtpUrl = () => {
         if (currentQrItem.value) {
             const item = currentQrItem.value
-            const algorithm = item.algorithm
-                ? item.algorithm.replace('SHA', 'SHA-').replace('SHA--', 'SHA-')
-                : 'SHA-1'
-            const uri = `otpauth://totp/${encodeURIComponent(item.service)}:${encodeURIComponent(item.account)}?secret=${item.secret}&issuer=${encodeURIComponent(item.service)}&algorithm=${algorithm}&digits=${item.digits || 6}&period=${item.period || 30}`
+            const algorithm = (item.algorithm || 'SHA1').replace(/-/g, '').toUpperCase()
+            const uri = `otpauth://totp/${encodeURIComponent(item.service)}:${encodeURIComponent(item.account)}?secret=${encodeURIComponent(item.secret)}&issuer=${encodeURIComponent(item.service)}&algorithm=${algorithm}&digits=${item.digits || 6}&period=${item.period || 30}`
             copyToClipboard(uri)
             ElMessage.success('OTP URI 已复制')
         }

@@ -59,7 +59,13 @@ const DataImport    = defineAsyncComponent(() => import('@/features/migration/vi
 const DataBackup    = defineAsyncComponent(() => import('@/features/backup/views/dataBackup.vue'))
 const UtilityTools  = defineAsyncComponent(() => import('@/features/tools/views/utilityTools.vue'))
 
-const activeTab    = ref('vault')
+const sessionKey = 'activeTab'
+const activeTab    = ref(sessionStorage.getItem(sessionKey) || 'vault')
+
+watch(activeTab, (newVal) => {
+  sessionStorage.setItem(sessionKey, newVal)
+})
+
 const vaultListRef = ref(null)
 
 // 操作成功后：跳回账户列表并刷新数据

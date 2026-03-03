@@ -98,7 +98,7 @@ export function useDataImport(emitFn) {
         try {
             currentFile.value = file
             const reader = new FileReader()
-            
+
             // 无论文件名为何，都先读取成二进制，再由 detectFileType 判断类型
             reader.onload = async (event) => {
                 const buffer = event.target.result
@@ -124,7 +124,7 @@ export function useDataImport(emitFn) {
                     }
                 }
 
-                if (detectedType === 'encrypted' || detectedType === 'aegis_encrypted') {
+                if (detectedType === 'encrypted' || detectedType === 'aegis_encrypted' || detectedType === 'proton') {
                     importPassword.value = ''
                     isDialogHandled.value = false
                     showDecryptDialog.value = true
@@ -218,7 +218,7 @@ export function useDataImport(emitFn) {
         }
 
         // 先在前端做简单的去重处理（大小写/空格不敏感），避免重复发送相同条目
-        const normalize = (s, a) => `${(s||'').toString().trim().toLowerCase()}:${(a||'').toString().trim().toLowerCase()}`;
+        const normalize = (s, a) => `${(s || '').toString().trim().toLowerCase()}:${(a || '').toString().trim().toLowerCase()}`;
         const seen = new Set();
         const filteredVault = [];
         for (const acc of batchAccumulatedVault.value) {
