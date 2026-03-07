@@ -42,6 +42,7 @@
                     <el-tag type="info" effect="light"><iconAegis /> Aegis (.json/.txt)</el-tag>
                     <el-tag type="info" effect="light"><iconBitwarden /> Bitwarden Auth (.json/.csv)</el-tag>
                     <el-tag type="info" effect="light"><iconProtonAuth /> Proton Auth (.json)</el-tag>
+                    <el-tag type="info" effect="light"><iconEnte /> Ente Auth (.txt)</el-tag>
                     <el-tag type="info" effect="light"><iconGoogleAuth /> Google Auth (.png/.jpg)</el-tag>
                     <el-tag type="info" effect="light"><iconMicrosoftAuth /> Microsoft Auth (PhoneFactor)</el-tag>
                   </div>
@@ -104,6 +105,7 @@
       <el-alert v-if="currentImportType === 'aegis_encrypted'" :title="$t('migration.detect_aegis')" type="warning" :closable="false" style="margin-bottom: 15px;" />
       <el-alert v-else-if="currentImportType === 'proton_encrypted'" :title="$t('migration.detect_proton')" type="warning" :closable="false" style="margin-bottom: 15px;" />
       <el-alert v-else-if="currentImportType === '2fas_encrypted'" :title="$t('migration.detect_2fas')" type="warning" :closable="false" style="margin-bottom: 15px;" />
+      <el-alert v-else-if="currentImportType === 'ente_encrypted'" :title="$t('migration.detect_ente')" type="warning" :closable="false" style="margin-bottom: 15px;" />
       <el-alert v-else :title="$t('migration.detect_system')" type="success" :closable="false" style="margin-bottom: 15px;" />
       <el-form label-position="top">
         <el-form-item :label="$t('migration.input_decrypt_pwd_label')">
@@ -129,6 +131,7 @@ import iconGoogleAuth from '@/shared/components/icons/iconGoogleAuth.vue'
 import iconBitwarden from '@/shared/components/icons/iconBitwarden.vue'
 import iconMicrosoftAuth from '@/shared/components/icons/iconMicrosoftAuth.vue'
 import iconProtonAuth from '@/shared/components/icons/iconProtonAuth.vue'
+import iconEnte from '@/shared/components/icons/iconEnte.vue'
 
 const emit = defineEmits(['success'])
 

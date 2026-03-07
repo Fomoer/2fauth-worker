@@ -6,6 +6,7 @@ import { gaMigrationStrategy } from '@/shared/utils/serializers/gauthStrategy'
 import { csvStrategy } from '@/shared/utils/serializers/csvStrategy'
 import { aegisStrategy } from '@/shared/utils/serializers/aegisStrategy'
 import protonStrategy from '@/shared/utils/serializers/protonStrategy'
+import { enteStrategy } from '@/shared/utils/serializers/enteStrategy'
 import { migrationError } from '@/shared/utils/errors/migrationError'
 import jsQR from 'jsqr'
 
@@ -91,6 +92,8 @@ export const dataMigrationService = {
                 if (json.version === 1 && json.db && typeof json.db === 'object' && Array.isArray(json.db.entries)) return 'aegis' // Aegis unencrypted
                 if (json.version === 1 && json.header && json.db && typeof json.db === 'string') return 'aegis_encrypted'
                 if (json.version === 1 && typeof json.salt === 'string' && typeof json.content === 'string') return 'proton_encrypted'
+                // Ente Auth 加密导出：同时包含 kdfParams 和 encryptedData 两个关键字段
+                if (json.kdfParams && typeof json.encryptedData === 'string') return 'ente_encrypted'
             }
         }
 
@@ -975,6 +978,21 @@ export const dataMigrationService = {
             type = 'raw'
             content = JSON.stringify(rawVault)
             password = undefined
+        }
+
+        // 处理 Ente Auth 加密备份
+        if (type === 'ente_encrypted') {
+            if (!password) throw new migrationError('导入 Ente Auth 加密备份需要密码', 'MISSING_PASSWORD')
+            try {
+                rawVault = await enteStrategy.decryptAndParse(content, password)
+                type = 'raw'
+                password = undefined
+            } catch (e) {
+                if (e.message === 'INVALID_FORMAT_OR_PASSWORD') {
+                    throw new migrationError('解密失败：密码错误或文件格式不兼容', 'DECRYPTION_FAILED', e)
+                }
+                throw new migrationError(`Ente Auth 导入失败：${e.message || String(e)}`, 'ENTE_IMPORT_FAILED', e)
+            }
         }
 
         // 处理 2FAS 加密备份

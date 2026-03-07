@@ -302,6 +302,7 @@
         "detect_aegis": "检测到 Aegis 加密备份",
         "detect_proton": "检测到 Proton Auth 加密备份",
         "detect_2fas": "检测到 2FAS Auth 加密备份",
+        "detect_ente": "检测到 Ente Auth 加密备份",
         "detect_system": "检测到本系统加密备份",
         "input_decrypt_pwd_label": "请输入该备份的解密密码：",
         "input_decrypt_pwd_placeholder": "输入当时设置的导出密码",
@@ -332,7 +333,7 @@
             "pros": "特色功能",
             "cons": "缺点与不足",
             "security": "安全事故史",
-            "summary": "一句话总结评价",
+            "summary": "简评",
             "rating": "推荐星级"
         },
         "apps": {
