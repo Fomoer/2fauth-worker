@@ -323,6 +323,86 @@
         "encrypted_backup_tail": "is not supported currently."
     },
     "tools": {
+        "apps_review_title": "2FA Apps Review",
+        "apps_review_desc": "Mainstream 2FA Applications Review and Anti-Pitfall Guide",
+        "apps_review_table": {
+            "app_name": "App Name",
+            "platforms": "Platforms",
+            "website": "Website",
+            "pros": "Pros",
+            "cons": "Cons",
+            "security": "Security Incidents",
+            "summary": "Summary",
+            "rating": "Rating"
+        },
+        "apps": {
+            "2fas": {
+                "pros": "Open source, fully local-first, supports secure iCloud/G-Drive sync.",
+                "cons": "Not a true standalone desktop app; you must scan a QR code on PC to use the browser extension.",
+                "security": "No security incidents",
+                "summary": "Highly trusted local-first 2FA, though the PC experience can be slightly tedious."
+            },
+            "aegis": {
+                "pros": "Fully open source, heavy local encryption, wildly powerful export & format compatibility.",
+                "cons": "Android-exclusive, lacks native cross-platform cloud sync or an iOS version.",
+                "security": "No security incidents",
+                "summary": "The absolute top choice for Android privacy geeks and power users."
+            },
+            "ente": {
+                "pros": "Fully open source, End-to-End Encrypted cloud sync, offers native desktop apps and a web vault.",
+                "cons": "Since all data relies on cloud sync, it may lack the purity sought by offline-only purists.",
+                "security": "No security incidents",
+                "summary": "The rapidly growing king of cross-platform sync, serving as Authy's perfect open-source successor."
+            },
+            "proton": {
+                "pros": "Deeply integrated into the highly private Proton ecosystem, E2EE sync.",
+                "cons": "Tied to Proton Pass ecosystem lock-in.",
+                "security": "No security incidents",
+                "summary": "Excellent choice for existing Proton ecosystem users with top-tier privacy."
+            },
+            "bitwarden": {
+                "pros": "Open source and free, backed by the reputable Bitwarden security team.",
+                "cons": "The standalone authenticator app is fairly basic right now (though BW main app also does 2FA).",
+                "security": "No security incidents",
+                "summary": "Pure and solid app endorsed by a reputable giant, ideal for minimalists."
+            },
+            "google": {
+                "pros": "Extremely lightweight, works out of the box, offers highly convenient QR batch export, and now supports cloud sync.",
+                "cons": "Closed source. Early sync lacked E2EE (though improved recently). No official desktop app.",
+                "security": "Initial cloud sync was criticized for lacking E2EE, but this has been addressed.",
+                "summary": "A pure, widely-adopted foundation app. Its QR batch export is a killer feature."
+            },
+            "microsoft": {
+                "pros": "If you are deep in the Microsoft ecosystem, it supports passwordless logins seamlessly.",
+                "cons": "Severely bloated, forces MS account binding, absolutely refuses standard exports (locking you in), and backups cannot cross iOS/Android.",
+                "security": "Numerous user reports of complete data loss when restoring on a new device, posing a significant security risk.",
+                "summary": "Way too heavy for pure TOTP usage, and its aggressive 'no-export' data monopoly is repulsive (avoid)."
+            },
+            "freeotp": {
+                "pros": "Open source project maintained by Red Hat, pure and free.",
+                "cons": "Extremely outdated UI, feels abandoned with rare updates.",
+                "security": "No security incidents",
+                "summary": "A nostalgic open-source tool, but no longer fits modern daily usage."
+            },
+            "authy": {
+                "pros": "Pioneer in cloud sync, very convenient historically.",
+                "cons": "Closed source, forces phone number binding, holds keys hostage (no exports), desktop apps shut down.",
+                "security": "Parent company Twilio suffered severe hacker breaches leaking sensitive data.",
+                "summary": "Once a king, now an absolutely anti-recommended app due to privacy and lock-in risks."
+            },
+            "lastpass": {
+                "pros": "Convenient for users deeply tied into LastPass ecosystem.",
+                "cons": "Closed-source cloud architecture, intertwined with LastPass infrastructure.",
+                "security": "LastPass suffered catastrophic global data breaches recently.",
+                "summary": "Due to LastPass's severe reputation crisis, avoid entrusting critical 2FA here."
+            },
+            "raivo": {
+                "pros": "Was previously the most recommended open-source iOS 2FA app.",
+                "cons": "Recently acquired by a shady shell company (Mobime).",
+                "security": "Disastrous update randomly deleted all local seeds for huge amounts of users, unrecoverable.",
+                "summary": "A catastrophic tale of trust betrayal and data destruction. DO NOT USE."
+            }
+        },
         "qr_parser": "QR Code Parser",
         "password_generator": "Password Gen",
         "time_sync": "Time Sync",
@@ -336,6 +416,8 @@
         "sync_failed": "Failed to connect to the server.",
         "select_chars": "Please select at least one character type.",
         "title": "Utility Toolbox",
+        "apps_review_tool_title": "2FA APP Review",
+        "apps_review_tool_desc": "Mainstream 2FA Apps Review & Anti-Pitfall Guide",
         "totp_secret_title": "TOTP Secret Tool",
         "totp_secret_desc": "Generate and convert Base32 secrets",
         "password_gen_title": "Password Generator",

@@ -273,7 +273,7 @@ onMounted(handleUnlocked)
     right: 0 !important;
     width: 100vw !important;
     background-color: var(--el-bg-color-page);
-    padding: 14px 28px 14px 20px !important;
+    padding: 14px 20px !important;
     border-radius: 0 !important;
   }
 }

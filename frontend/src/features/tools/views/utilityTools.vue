@@ -42,12 +42,13 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent } from 'vue'
-import { Key, ArrowLeft, Timer, Lock, Camera, WarningFilled } from '@element-plus/icons-vue'
+import { Key, ArrowLeft, Timer, Lock, Camera, WarningFilled, Iphone } from '@element-plus/icons-vue'
 import { i18n } from '@/locales'
 const ToolPassword = defineAsyncComponent(() => import('@/features/tools/components/passwordGenerator.vue'))
 const ToolTimeSync = defineAsyncComponent(() => import('@/features/tools/components/timeSync.vue'))
 const ToolQrParser = defineAsyncComponent(() => import('@/features/tools/components/qrParser.vue'))
 const ToolTotpSecret = defineAsyncComponent(() => import('@/features/tools/components/totpSecret.vue'))
+const ToolAppsReview = defineAsyncComponent(() => import('@/features/tools/components/appsReview.vue'))
 
 const currentTool = ref(null)
 
@@ -61,6 +62,14 @@ const tools = computed(() => [
     icon: Lock, 
     iconColor: '#67C23A',
     bgColor: 'var(--el-color-success-light-9)'
+  },
+  {
+    id: 'apps-review',
+    title: t('tools.apps_review_tool_title'),
+    desc: t('tools.apps_review_tool_desc'),
+    icon: Iphone,
+    iconColor: '#9c27b0',
+    bgColor: 'var(--el-color-info-light-9)'
   },
   { 
     id: 'password', 
@@ -99,6 +108,7 @@ const activeComponent = computed(() => {
     case 'time-sync': return ToolTimeSync;
     case 'qr-parser': return ToolQrParser;
     case 'totp-secret': return ToolTotpSecret;
+    case 'apps-review': return ToolAppsReview;
     default: return null
   }
 })
