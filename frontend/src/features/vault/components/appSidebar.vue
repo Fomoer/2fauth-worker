@@ -179,8 +179,22 @@ const handleLogout = async () => {
   if (layoutStore.showMobileMenu) {
     layoutStore.showMobileMenu = false
   }
-  await authUserStore.logout()
-  router.replace('/login')
+  
+  // 1. 立即清空本地状态（同步执行，防止 UI 卡顿）
+  await authUserStore.clearUserInfo()
+  
+  // 2. 带有超时保护的异步注销，最多等待 1.5 秒保证后端请求发完，防止浏览器过早跳转导致请求 Abort
+  await Promise.race([
+    authUserStore.logout(),
+    new Promise(resolve => setTimeout(resolve, 1500))
+  ]).catch(() => {})
+  
+  // 3. 物理跳转进入登录页
+  // 使用 location.href 而不是 router.replace，目的是强制刷新全部 JS Chunks，
+  // 解决 Cloudflare 部署新版本后旧分块 404 导致的白屏或无响应问题。
+  window.location.href = '/login'
+  
+  // 提示信息（由于页面重刷，这条提示可能稍纵即逝，但保留逻辑完整性）
   ElMessage.success(t('auth.logout_success'))
 }
 </script>
@@ -199,6 +213,7 @@ const handleLogout = async () => {
 }
 
 .user-avatar {
+  flex-shrink: 0;
   border: 2px solid var(--el-color-primary-light-8);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -206,6 +221,7 @@ const handleLogout = async () => {
 .user-detail {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .user-name-row {
@@ -220,6 +236,9 @@ const handleLogout = async () => {
   font-weight: 600;
   color: var(--el-text-color-primary);
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .status-dot {

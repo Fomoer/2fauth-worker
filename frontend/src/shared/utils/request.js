@@ -109,12 +109,8 @@ export async function request(url, options = {}) {
                 }
 
                 if (router && router.currentRoute.value.path !== '/login') {
-                    router.replace('/login').then(() => {
-                        // 给个延迟再释放锁，防止快速回溯
-                        setTimeout(() => { isNavigatingToLogin = false }, 1000)
-                    }).catch(() => {
-                        setTimeout(() => { isNavigatingToLogin = false }, 1000)
-                    })
+                    // 全局会话过期使用物理跳转，清空内存所有闭包与过期 JS 分块引用
+                    window.location.href = '/login'
                 } else {
                     setTimeout(() => { isNavigatingToLogin = false }, 1000)
                 }
@@ -150,7 +146,7 @@ export async function request(url, options = {}) {
                 }
                 ElMessage.error(translatedError)
             }
-            throw new Error(data.message || data.error || '请求失败')
+            throw new Error(data.message || data.error || i18n.global.t('api_errors.request_failed'))
         }
 
         // 解构新的标准响应格式。如果后端返回 { success: true, data: [...] }，这里直接将 data 铺平返回，保持对原有旧代码的兼容性。
@@ -168,7 +164,7 @@ export async function request(url, options = {}) {
             // Only show toast if it wasn't already shown in the !response.ok block above
             // The throwing logic above throws an Error with a specific format, we only toast here if it's a fetch/network level error
             if (error.name === 'TypeError' || error.message.includes('fetch')) {
-                ElMessage.error(i18n.global.te('api_errors.network_error') ? i18n.global.t('api_errors.network_error') : '网络请求失败')
+                ElMessage.error(i18n.global.te('api_errors.network_error') ? i18n.global.t('api_errors.network_error') : i18n.global.t('auth.network_abnormal'))
             }
         }
         throw error

@@ -7,7 +7,12 @@
         <p class="subtitle">{{ $t('auth.subtitle') }}</p>
       </div>
 
-      <div class="action-container">
+      <div v-if="isFetchingProviders" class="loading-state" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 150px; color: var(--el-text-color-secondary);">
+        <el-icon class="is-loading" :size="38" style="margin-bottom: 20px; color: var(--el-color-primary);"><Loading /></el-icon>
+        <p style="font-size: 15px; letter-spacing: 1px;">{{ $t('common.loading_data') }}</p>
+      </div>
+
+      <div v-else class="action-container" style="min-height: 100px; border-radius: 8px;">
         <template v-for="provider in providers" :key="provider.id">
           <el-button
             type="primary"
@@ -42,7 +47,7 @@
 </template>
 
 <script setup>
-import { Lock, Platform } from '@element-plus/icons-vue'
+import { Lock, Platform, Loading } from '@element-plus/icons-vue'
 import iconGithub from '@/shared/components/icons/iconGithub.vue'
 import iconGoogle from '@/shared/components/icons/iconGoogle.vue'
 import iconGitee from '@/shared/components/icons/iconGitee.vue'
@@ -63,6 +68,7 @@ const iconComponents = {
 const {
   providers,
   loadingProvider,
+  isFetchingProviders,
   handleLogin
 } = useOAuthProviders()
 </script>

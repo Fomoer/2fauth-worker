@@ -45,22 +45,31 @@
 </template>
 
 <script setup>
-import { ref, nextTick, defineAsyncComponent, watch } from 'vue'
+import { ref, nextTick, watch, onMounted } from 'vue'
 import AppSidebar from '@/features/vault/components/appSidebar.vue'
 import { useLayoutStore } from '@/shared/stores/layoutStore'
+import { createAsyncComponent } from '@/shared/utils/asyncHelper'
 
 const layoutStore = useLayoutStore()
 
-const VaultList     = defineAsyncComponent(() => import('@/features/vault/components/vaultList.vue'))
-const AddVaultScan  = defineAsyncComponent(() => import('@/features/vault/components/addVaultScan.vue'))
-const AddVaultManual= defineAsyncComponent(() => import('@/features/vault/components/addVaultManual.vue'))
-const DataExport    = defineAsyncComponent(() => import('@/features/migration/views/dataExport.vue'))
-const DataImport    = defineAsyncComponent(() => import('@/features/migration/views/dataImport.vue'))
-const DataBackup    = defineAsyncComponent(() => import('@/features/backup/views/dataBackup.vue'))
-const UtilityTools  = defineAsyncComponent(() => import('@/features/tools/views/utilityTools.vue'))
+const VaultList     = createAsyncComponent(() => import('@/features/vault/components/vaultList.vue'))
+const AddVaultScan  = createAsyncComponent(() => import('@/features/vault/components/addVaultScan.vue'))
+const AddVaultManual= createAsyncComponent(() => import('@/features/vault/components/addVaultManual.vue'))
+const DataExport    = createAsyncComponent(() => import('@/features/migration/views/dataExport.vue'))
+const DataImport    = createAsyncComponent(() => import('@/features/migration/views/dataImport.vue'))
+const DataBackup    = createAsyncComponent(() => import('@/features/backup/views/dataBackup.vue'))
+const UtilityTools  = createAsyncComponent(() => import('@/features/tools/views/utilityTools.vue'))
 
 const sessionKey = 'activeTab'
 const activeTab    = ref(sessionStorage.getItem(sessionKey) || 'vault')
+
+onMounted(() => {
+  // 强制校准：如果状态非法，回归默认视图
+  const validTabs = ['vault', 'add-vault-scan', 'add-vault-manual', 'migration-export', 'migration-import', 'backups', 'tools']
+  if (!validTabs.includes(activeTab.value)) {
+    activeTab.value = 'vault'
+  }
+})
 
 watch(activeTab, (newVal) => {
   sessionStorage.setItem(sessionKey, newVal)

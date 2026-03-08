@@ -40,6 +40,18 @@ body,
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* 移动端特殊适配：释放根部滚动以支持原生下拉刷新 */
+@media (max-width: 768px) {
+
+  html,
+  body,
+  #app {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -89,11 +101,25 @@ a:hover {
   overflow: hidden;
 }
 
+@media (max-width: 768px) {
+  .app-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+}
+
 main {
   flex: 1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  main {
+    overflow: visible;
+  }
 }
 
 /* TheHeader.vue */
@@ -188,6 +214,16 @@ main {
   overflow: hidden;
 }
 
+@media (max-width: 768px) {
+
+  .home-container,
+  .main-body {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+}
+
 .left-aside {
   background: var(--el-bg-color);
   border-right: 1px solid var(--el-border-color-light);
@@ -216,6 +252,15 @@ main {
   /* 原为 auto，修改为保留滚动空间防止因高度变化产生的抖动，或直接将滚动条悬浮覆盖 */
   overflow-y: overlay;
   scrollbar-gutter: stable;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    overflow: visible !important;
+    overflow-y: visible !important;
+    overflow-x: visible !important;
+    scrollbar-gutter: auto;
+  }
 }
 
 .sidebar-footer {
@@ -248,12 +293,14 @@ main {
 
 /* Login.vue */
 .login-container {
+  margin: 25px 0px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  flex: 1;
   background: transparent;
   position: relative;
+
 }
 
 .login-card {
@@ -311,12 +358,21 @@ main {
   margin-top: 10px;
 }
 
+/* 移动端特殊适配 */
+@media (max-width: 768px) {
+  .login-container {
+    margin: 15px 0px;
+    align-items: flex-start;
+    /* 移动端靠上显示，避免被软键盘完全遮挡(虽然登录页通常没键盘) */
+  }
+}
+
 /* OAuthCallback.vue */
 .callback-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  flex: 1;
   background: transparent;
 }
 

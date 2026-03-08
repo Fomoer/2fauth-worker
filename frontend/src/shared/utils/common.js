@@ -1,12 +1,13 @@
 import { ElMessage } from 'element-plus'
+import { i18n } from '@/locales'
 
-export async function copyToClipboard(text, successMsg = '复制成功') {
+export async function copyToClipboard(text, successMsg = i18n.global.t('common.copy_success')) {
   if (!text) return
   try {
     await navigator.clipboard.writeText(text)
     ElMessage.success(successMsg)
   } catch (e) {
-    ElMessage.error('复制失败')
+    ElMessage.error(i18n.global.t('common.copy_fail'))
     console.error('Clipboard error:', e)
   }
 }

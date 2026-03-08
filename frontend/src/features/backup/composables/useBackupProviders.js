@@ -21,7 +21,7 @@ export function useBackupProviders() {
     const isEditingTelegramToken = ref(false)
 
     const initialFormState = () => ({
-        type: 'webdav',
+        type: 's3',
         name: '',
         config: { url: '', username: '', password: '', saveDir: '/2fauth-worker-backup', endpoint: '', bucket: '', region: 'auto', accessKeyId: '', secretAccessKey: '', botToken: '', chatId: '' },
         autoBackup: false,
@@ -104,7 +104,7 @@ export function useBackupProviders() {
                 return null
             }
             if (!form.value.autoBackupPassword || form.value.autoBackupPassword.length < 12) {
-                return '自动备份密码长度必须至少 12 位'
+                return t('backup.password_min_length')
             }
         }
         return null
@@ -121,7 +121,7 @@ export function useBackupProviders() {
                 form.value.config,
                 isEditing.value ? currentProviderId.value : null
             )
-            if (res.success) ElMessage.success('连接成功')
+            if (res.success) ElMessage.success(t('backup.test_success'))
         } catch (e) {
             // Already handled by request.js global error handler
         } finally { isTesting.value = false }
@@ -141,7 +141,7 @@ export function useBackupProviders() {
                 ? await backupService.updateProvider(currentProviderId.value, form.value)
                 : await backupService.createProvider(form.value)
             if (res.success) {
-                ElMessage.success('保存成功')
+                ElMessage.success(t('backup.save_success'))
                 showConfigDialog.value = false
                 await fetchProviders()
             }
@@ -152,7 +152,7 @@ export function useBackupProviders() {
 
     const deleteProvider = async (provider) => {
         try {
-            await ElMessageBox.confirm('确定删除该备份源吗？', '警告', { type: 'warning' })
+            await ElMessageBox.confirm(t('backup.delete_provider_confirm'), t('common.warning'), { type: 'warning' })
             await backupService.deleteProvider(provider.id)
             await fetchProviders()
         } catch (e) {

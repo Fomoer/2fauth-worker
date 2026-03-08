@@ -66,34 +66,14 @@
       <el-form :model="form" label-position="top" ref="formRef">
         <el-form-item :label="$t('backup.type_label')">
           <el-select v-model="form.type" :disabled="isEditing">
-            <el-option label="WebDAV" value="webdav" />
             <el-option :label="$t('backup.type_s3')" value="s3" />
             <el-option label="Telegram" value="telegram" />
+            <el-option label="WebDAV" value="webdav" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('backup.name_label')">
           <el-input v-model="form.name" :placeholder="$t('backup.name_placeholder')" />
         </el-form-item>
-        
-        <!-- WebDAV 配置 -->
-        <template v-if="form.type === 'webdav'">
-          <el-form-item :label="$t('backup.webdav_url')">
-            <el-input v-model="form.config.url" placeholder="https://pan.example.com/dav/" />
-          </el-form-item>
-          <el-form-item :label="$t('backup.username')">
-            <el-input v-model="form.config.username" />
-          </el-form-item>
-          <el-form-item :label="$t('backup.password')">
-            <div v-if="isEditing && !isEditingWebdavPwd" style="display: flex; align-items: center; justify-content: space-between; background-color: var(--el-fill-color-light); padding: 0 15px; border-radius: 4px; border: 1px solid var(--el-border-color); width: 100%; height: 32px;">
-              <span style="font-family: monospace; letter-spacing: 2px;">******</span>
-              <el-button link type="primary" @click="isEditingWebdavPwd = true; form.config.password = ''">{{ $t('backup.modify') }}</el-button>
-            </div>
-            <el-input v-else v-model="form.config.password" type="password" show-password />
-          </el-form-item>
-          <el-form-item :label="$t('backup.save_dir')">
-            <el-input v-model="form.config.saveDir" placeholder="/2fauth-worker-backup" />
-          </el-form-item>
-        </template>
 
         <!-- S3 配置 -->
         <template v-if="form.type === 's3'">
@@ -139,6 +119,27 @@
             </div>
           </el-form-item>
         </template>
+
+        <!-- WebDAV 配置 -->
+        <template v-if="form.type === 'webdav'">
+          <el-form-item :label="$t('backup.webdav_url')">
+            <el-input v-model="form.config.url" placeholder="https://pan.example.com/dav/" />
+          </el-form-item>
+          <el-form-item :label="$t('backup.username')">
+            <el-input v-model="form.config.username" />
+          </el-form-item>
+          <el-form-item :label="$t('backup.password')">
+            <div v-if="isEditing && !isEditingWebdavPwd" style="display: flex; align-items: center; justify-content: space-between; background-color: var(--el-fill-color-light); padding: 0 15px; border-radius: 4px; border: 1px solid var(--el-border-color); width: 100%; height: 32px;">
+              <span style="font-family: monospace; letter-spacing: 2px;">******</span>
+              <el-button link type="primary" @click="isEditingWebdavPwd = true; form.config.password = ''">{{ $t('backup.modify') }}</el-button>
+            </div>
+            <el-input v-else v-model="form.config.password" type="password" show-password />
+          </el-form-item>
+          <el-form-item :label="$t('backup.save_dir')">
+            <el-input v-model="form.config.saveDir" placeholder="/2fauth-worker-backup" />
+          </el-form-item>
+        </template>
+
         <el-divider content-position="left">{{ $t('backup.auto_backup_config') }}</el-divider>
         <el-form-item :label="$t('backup.auto_backup')">
           <el-switch v-model="form.autoBackup" :active-text="$t('backup.switch_on')" :inactive-text="$t('backup.switch_off')" />
@@ -162,7 +163,6 @@
           <el-input-number v-model="form.autoBackupRetain" :min="0" :max="999" :label="$t('backup.retain_count_label')"></el-input-number>
           <div class="form-tip" style="width: 100%">{{ $t('backup.retain_zero_tip') }}</div>
         </el-form-item>
-
       </el-form>
       <template #footer>
         <el-button @click="testConnection" :loading="isTesting">{{ $t('backup.test_connection') }}</el-button>

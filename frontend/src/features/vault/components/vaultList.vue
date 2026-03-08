@@ -1,8 +1,8 @@
 <template>
   <div class="vault-list-wrapper" style="min-height: 400px;">
     <div class="vault-content">
-      <!-- 移动端偏移 0px (Header2), PC端偏移 61px (Header1) -->
-      <el-affix :offset="layoutStore.isMobile ? 0 : 61" @change="(val) => isToolbarFixed = val">
+      <!-- 移动端偏移 60px (Header2), PC端偏移 61px (Header1) -->
+      <el-affix :offset="layoutStore.isMobile ? 60 : 61" @change="(val) => isToolbarFixed = val">
         <div class="toolbar" :class="{ 'is-affixed': isToolbarFixed }" style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
         <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
           <el-input 
@@ -263,16 +263,14 @@ onMounted(handleUnlocked)
 .toolbar.is-affixed {
   z-index: 2000;
   margin-bottom: 0 !important;
+  background-color: var(--el-bg-color-page);
 }
 
 /* 移动端吸顶效果：全屏、背景、边框 */
 @media (max-width: 767px) {
   .toolbar.is-affixed {
-    position: fixed !important;
-    left: 0 !important;
-    right: 0 !important;
     width: 100vw !important;
-    background-color: var(--el-bg-color-page);
+    margin-left: -20px !important; /* 抵消 el-main 的内边距 */
     padding: 14px 20px !important;
     border-radius: 0 !important;
   }
@@ -281,9 +279,8 @@ onMounted(handleUnlocked)
 /* PC 端吸顶效果：保持原有宽度，无背景色和下边框 */
 @media (min-width: 768px) {
   .toolbar.is-affixed {
-    background-color: var(--el-bg-color) !important;
     border-bottom: none !important;
-    padding: 10px 0px 20px 0px !important;
+    padding: 20px 0px !important;
   }
 }
 </style>

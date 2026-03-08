@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import { Warning } from '@element-plus/icons-vue'
 import TheHeader from '@/shared/components/theHeader.vue'
@@ -17,6 +17,15 @@ const elementLocale = computed(() => {
 
 const route = useRoute()
 const layoutStore = useLayoutStore()
+
+// 移动端菜单打开时锁定背景滚动
+watch(() => layoutStore.showMobileMenu, (newVal) => {
+  if (newVal) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+})
 
 const checkMobile = () => {
   layoutStore.isMobile = window.innerWidth < 768

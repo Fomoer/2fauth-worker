@@ -15,6 +15,8 @@
         "update_available": "Update Available",
         "pwa_update_ready": "🎉 New Cloudflare Worker deployment is ready!",
         "refresh_now": "Refresh Now",
+        "copy_success": "Copy success",
+        "copy_fail": "Copy failed",
         "offline_mode": "Network disconnected, the application is currently in offline cache mode",
         "search_placeholder": "Search service, account, or category...",
         "selected_items": "Selected {count} items",
@@ -477,6 +479,7 @@
         "subtitle": "A Secure 2FA Management Tool",
         "login": "Login",
         "logout_success": "Signed out securely.",
+        "fetch_providers_failed": "Failed to fetch identity providers, please try again later",
         "oauth_failed": "Failed to retrieve OAuth link. Provider not configured.",
         "oauth_network_error": "Network error while getting OAuth status.",
         "login_with": "Login with {provider}",
@@ -641,6 +644,9 @@
             "gitee_config_suggestion": "Please verify Gitee developer credentials, and depending on your deployment method, fill in OAUTH_GITEE_CLIENT_ID, OAUTH_GITEE_CLIENT_SECRET, and OAUTH_GITEE_REDIRECT_URI.",
             "cloudflare_config_suggestion": "Requires four parameters: Client ID, Secret, Org Domain, Redirect URI. Depending on your deployment method, fill in OAUTH_CLOUDFLARE_CLIENT_ID, OAUTH_CLOUDFLARE_CLIENT_SECRET, and OAUTH_CLOUDFLARE_REDIRECT_URI.",
             "no_provider_suggestion": "Consult the README to pick the easiest provider. Retrieve the Client ID and Secret and configure them in Cloudflare's dashboard."
-        }
+        },
+        "copy_unsupported": "Your browser doesn't support automatic copying, please manually select it.",
+        "copy_success": "Key copied to clipboard",
+        "connection_failed": "Cannot connect to server for health check"
     }
 }

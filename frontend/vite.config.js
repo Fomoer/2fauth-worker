@@ -81,6 +81,8 @@ export default defineConfig({
         globIgnores: [
           '**/assets/wa-sqlite*.js',
           '**/assets/argon2*.js',
+          '**/assets/hash-wasm*.js',
+          '**/assets/libsodium-wrappers*.js',
           '**/assets/sql*.js',
           '**/assets/jsQR*.js',
           '**/assets/dataImport*.js',
@@ -110,7 +112,7 @@ export default defineConfig({
           },
           {
             // 为被 globIgnores 忽略的大体积工具 JS chunk 配置动态缓存
-            urlPattern: /assets\/(wa-sqlite|argon2|sql|jsQR|dataImport|dataMigrationService).*\.js$/i,
+            urlPattern: /assets\/(wa-sqlite|argon2|hash-wasm|libsodium-wrappers|sql|jsQR|dataImport|dataMigrationService).*\.js$/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'lazy-tools-js-cache',
@@ -137,7 +139,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8787',
+        target: 'http://127.0.0.1:8787',
         changeOrigin: true
       }
     }
@@ -169,6 +171,8 @@ export default defineConfig({
             // 加密与数据库相关的超大模块抽象为主 Vendor Chunk
             if (id.includes('/node_modules/wa-sqlite/')) return 'wa-sqlite'
             if (id.includes('/node_modules/argon2-browser/')) return 'argon2-browser'
+            if (id.includes('/node_modules/hash-wasm/')) return 'hash-wasm'
+            if (id.includes('/node_modules/libsodium-wrappers/') || id.includes('/node_modules/libsodium-wrappers-sumo/')) return 'libsodium-wrappers'
             if (id.includes('/node_modules/sql.js/')) return 'sql-js'
 
             // 剩余其他的第三方包交给 Rollup 按需路由或组件自动拆分 (移除强硬的 'vendor' 返回)

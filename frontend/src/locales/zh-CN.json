@@ -15,6 +15,8 @@
         "update_available": "更新可用",
         "pwa_update_ready": "🎉 Cloudflare Worker 新部署已就绪！",
         "refresh_now": "立即刷新",
+        "copy_success": "复制成功",
+        "copy_fail": "复制失败",
         "offline_mode": "网络已断开，当前应用正处于离线缓存模式",
         "search_placeholder": "搜索服务名称、账号或分类...",
         "selected_items": "已选 {count} 项",
@@ -478,6 +480,7 @@
         "subtitle": "一站式安全双重认证管理",
         "login": "登录",
         "logout_success": "已安全退出",
+        "fetch_providers_failed": "获取身份提供商列表失败，请稍后重试",
         "oauth_failed": "获取授权链接失败：提供商未配置或失效",
         "oauth_network_error": "获取授权状态遭遇网络异常",
         "login_with": "通过 {provider} 授权登录",
@@ -642,6 +645,9 @@
             "gitee_config_suggestion": "请核对 Gitee 开发者凭据，，根据不同部署方式，填入 OAUTH_GITEE_CLIENT_ID、OAUTH_GITEE_CLIENT_SECRET、OAUTH_GITEE_REDIRECT_URI 填入",
             "cloudflare_config_suggestion": "需要四位一体的参数：Client ID, Secret, Org Domain, Redirect URI，根据不同部署方式，填入  OAUTH_CLOUDFLARE_CLIENT_ID、OAUTH_CLOUDFLARE_CLIENT_SECRET、OAUTH_CLOUDFLARE_REDIRECT_URI 填入",
             "no_provider_suggestion": "阅读2Fauth Worker 的 README，挑选最适合您且配置最简单的一种登录方式，按照其说明获取 Client ID 与 Secret 并在云端配置。"
-        }
+        },
+        "copy_unsupported": "您的浏览器不支持自动复制，请手动选中复制。",
+        "copy_success": "安全密钥已复制到剪贴板",
+        "connection_failed": "无法连接到服务端进行安全校验"
     }
 }

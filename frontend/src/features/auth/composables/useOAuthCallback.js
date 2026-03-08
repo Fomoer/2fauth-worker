@@ -98,10 +98,12 @@ export function useOAuthCallback() {
                 if (data.deviceKey) {
                     await setIdbItem('device_salt', data.deviceKey)
                 }
-
                 // 更新状态机进入应用主流程
                 const authUserStore = useAuthUserStore()
                 await authUserStore.fetchUserInfo()
+
+                // 清理旧的 Tab 状态，确保干净进入首页
+                sessionStorage.clear()
                 router.push('/')
             } else {
                 errorMsg.value = data.error || t('auth.login_rejected')

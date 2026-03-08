@@ -2,7 +2,7 @@
   "name": "backend",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev --config ../wrangler.dev.toml --host 0.0.0.0 --port 8787 --test-scheduled",
+    "dev": "wrangler dev --config ../wrangler.dev.toml --ip 0.0.0.0 --port 8787 --test-scheduled",
     "deploy": "wrangler deploy --minify"
   },
   "dependencies": {
@@ -15,7 +15,7 @@
     "@cloudflare/workers-types": "^4.20260226.1",
     "drizzle-kit": "^0.31.9",
     "typescript": "^5.9.3",
-    "wrangler": "^4.69.0"
+    "wrangler": "^4.71.0"
   },
   "overrides": {
     "esbuild": ">=0.25.0"

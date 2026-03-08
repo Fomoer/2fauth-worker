@@ -1,6 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { authService } from '@/features/auth/service/authService'
+import { i18n } from '@/locales'
 
 const CACHE_KEY = 'oauth_providers_cache'
 
@@ -10,6 +11,7 @@ const CACHE_KEY = 'oauth_providers_cache'
 export function useOAuthProviders() {
     const loadingProvider = ref(null)
     const providers = ref([])
+    const isFetchingProviders = ref(true)
 
     onMounted(async () => {
         // 1. 优先从缓存读取，实现秒开 (Offline-first / Stale-while-revalidate)
@@ -17,6 +19,7 @@ export function useOAuthProviders() {
         if (cached) {
             try {
                 providers.value = JSON.parse(cached)
+                // 移除：isFetchingProviders.value = false，确保持续显示 loading 直到最新 API 返回
             } catch (e) {
                 console.warn('Invalid oauth providers cache', e)
             }
@@ -34,6 +37,9 @@ export function useOAuthProviders() {
             }
         } catch (e) {
             console.error('Failed to sync oauth providers:', e)
+            ElMessage.error(i18n.global.t('auth.fetch_providers_failed'))
+        } finally {
+            isFetchingProviders.value = false
         }
     })
 
@@ -57,11 +63,19 @@ export function useOAuthProviders() {
 
                 window.location.href = data.authUrl
             } else {
-                ElMessage.error(data.error || '获取授权链接失败: 提供商未配置或失效')
+                let errorMsg = data.error
+                if (errorMsg && i18n.global.te(`api_errors.${errorMsg}`)) {
+                    errorMsg = i18n.global.t(`api_errors.${errorMsg}`)
+                }
+                ElMessage.error(errorMsg || i18n.global.t('auth.oauth_failed'))
             }
         } catch (error) {
             // Error managed by axios request interceptor & authError
-            ElMessage.error(error.message || '获取授权状态遭遇网络异常')
+            let errorMsg = error.message
+            if (errorMsg && i18n.global.te(`api_errors.${errorMsg}`)) {
+                errorMsg = i18n.global.t(`api_errors.${errorMsg}`)
+            }
+            ElMessage.error(errorMsg || i18n.global.t('auth.oauth_network_error'))
         } finally {
             // The loading state mostly clears when the page navigates away, 
             // but we reset it here in case of errors.
@@ -72,6 +86,7 @@ export function useOAuthProviders() {
     return {
         providers,
         loadingProvider,
+        isFetchingProviders,
         handleLogin
     }
 }

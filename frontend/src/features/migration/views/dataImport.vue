@@ -201,14 +201,18 @@ const {
 }
 
 .tags span.el-tag {
-  padding: 8px 15px;
+  padding: 4px 8px; /* 减小内边距，使其不那么像按钮 */
   height: auto;
   color: var(--el-text-color-regular);
+  cursor: default; /* 明确鼠标状态不是可点击的 */
+  border-color: transparent; /* 去除边框，使其更像高亮文本 */
+  background-color: var(--el-fill-color-light); /* 更浅的背景色 */
 }
 
 .tags span i.el-icon {
   display: inline-flex;
   flex-wrap: wrap;
+  margin-right: 4px; /* 图标和文字之间增加一点点间距 */
 }
 
 .ga-tip {

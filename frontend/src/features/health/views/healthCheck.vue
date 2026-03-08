@@ -103,6 +103,7 @@ import { WarningFilled, CopyDocument, Refresh, Document, Select, Monitor, Settin
 import { ElMessage } from 'element-plus'
 import { request } from '@/shared/utils/request'
 import { useClipboard } from '@vueuse/core'
+import { i18n } from '@/locales'
 
 const router = useRouter()
 const { copy, isSupported } = useClipboard()
@@ -135,11 +136,11 @@ const generateNewKey = (field) => {
 
 const copyKey = async (field) => {
   if (!isSupported.value) {
-    ElMessage.error('您的浏览器不支持自动复制，请手动选中复制。')
+    ElMessage.error(i18n.global.t('healthCheck.copy_unsupported'))
     return
   }
   await copy(generatedKeys.value[field])
-  ElMessage.success('安全密钥已复制到剪贴板')
+  ElMessage.success(i18n.global.t('healthCheck.copy_success'))
 }
 
 const checkHealth = async () => {
@@ -178,7 +179,7 @@ const checkHealth = async () => {
             }
         })
     } else {
-        ElMessage.error('无法连接到服务端进行安全校验')
+        ElMessage.error(i18n.global.t('healthCheck.connection_failed'))
     }
   } finally {
     loading.value = false

@@ -25,6 +25,7 @@ themeStore.initTheme()
 
 // PWA Service Worker 注册
 const updateSW = registerSW({
+  immediate: true,
   onofflineReady() { },
   onNeedRefresh() {
     import('element-plus').then(({ ElNotification }) => {
