@@ -1,13 +1,11 @@
 import { eq, inArray, desc, like, or, and, sql } from 'drizzle-orm';
-import { D1Database } from '@cloudflare/workers-types';
-import { createDb } from '@/shared/db/db';
 import { vault, type VaultItem, type NewVaultItem } from '@/shared/db/schema';
 
 export class VaultRepository {
-    private db;
+    private db: any;
 
-    constructor(d1: D1Database) {
-        this.db = createDb(d1);
+    constructor(dbClient: any) {
+        this.db = dbClient;
     }
 
     /**

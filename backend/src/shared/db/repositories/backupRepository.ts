@@ -1,13 +1,11 @@
 import { eq, desc } from 'drizzle-orm';
-import { D1Database } from '@cloudflare/workers-types';
-import { createDb } from '@/shared/db/db';
 import { backupProviders, type BackupProvider, type NewBackupProvider } from '@/shared/db/schema';
 
 export class BackupRepository {
-    private db;
+    private db: any;
 
-    constructor(d1: D1Database) {
-        this.db = createDb(d1);
+    constructor(dbClient: any) {
+        this.db = dbClient;
     }
 
     /**

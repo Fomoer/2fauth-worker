@@ -633,7 +633,8 @@
         },
         "suggestions": {
             "suggestion_deploy_by_worker": "Worker 一键部署: 前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密",
-            "suggestion_deploy_by_gitaction": "Github Action部署: 前往 Fork 仓库 -> Settings -> Secrets and variables -> Actions",
+            "suggestion_deploy_by_gitaction": "Github Action 部署: 前往 Fork 仓库 -> Settings -> Secrets and variables -> Actions",
+            "suggestion_deploy_by_docker": "Docker Compose 部署: 修改 docker-compose.yml -> environment",
             "encryption_key_suggestion": "请复制下方为您预生成的高强度随机密钥，根据不同部署方式填入，将其填入 ENCRYPTION_KEY 。",
             "jwt_secret_suggestion": "请复制下方为您预生成的高强度随机密钥，根据不同部署方式填入，将其填入 JWT_SECRET 。",
             "oauth_allow_all_suggestion": "根据不同部署方式，将 OAUTH_ALLOW_ALL 删除将其值修改为 false。",

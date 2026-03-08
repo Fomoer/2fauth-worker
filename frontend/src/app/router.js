@@ -50,7 +50,13 @@ router.beforeEach(async (to, from, next) => {
     try {
       await authUserStore.fetchUserInfo()
       isAuthenticated = !!(authUserStore.userInfo && authUserStore.userInfo.id)
-    } catch (e) { }
+    } catch (e) {
+      // Handle the case where the application environment is unstable/not healthy
+      if (e.isSecurity || e.message === 'Security Check Failed') {
+        next('/health')
+        return
+      }
+    }
   }
 
   // 3. 处理需要登录的页面

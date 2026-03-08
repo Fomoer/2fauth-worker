@@ -38,12 +38,15 @@
               <div class="suggestion-box">
                 <div class="suggestion-title">{{ $t('healthCheck.how_to_fix') }}</div>
                 
-                <div v-if="issue.deploy_by_worker || issue.deploy_by_gitaction" class="deploy-method-guide">
+                <div v-if="issue.deploy_by_worker || issue.deploy_by_gitaction || issue.deploy_by_docker" class="deploy-method-guide">
                   <p v-if="issue.deploy_by_worker" class="deploy-item">
                     <el-icon><Monitor /></el-icon> {{ $t(`healthCheck.suggestions.${issue.deploy_by_worker}`) }}
                   </p>
                   <p v-if="issue.deploy_by_gitaction" class="deploy-item">
                     <el-icon><Setting /></el-icon> {{ $t(`healthCheck.suggestions.${issue.deploy_by_gitaction}`) }}
+                  </p>
+                  <p v-if="issue.deploy_by_docker" class="deploy-item">
+                    <el-icon><Box /></el-icon> {{ $t(`healthCheck.suggestions.${issue.deploy_by_docker}`) }}
                   </p>
                 </div>
                 
@@ -99,7 +102,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { WarningFilled, CopyDocument, Refresh, Document, Select, Monitor, Setting } from '@element-plus/icons-vue'
+import { WarningFilled, CopyDocument, Refresh, Document, Select, Monitor, Setting, Box } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { request } from '@/shared/utils/request'
 import { useClipboard } from '@vueuse/core'

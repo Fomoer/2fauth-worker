@@ -11,13 +11,18 @@
     },
     "strict": true,
     "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "lib": [
       "ESNext",
       "DOM",
       "DOM.Iterable"
     ],
     "types": [
-      "@cloudflare/workers-types"
+      "@cloudflare/workers-types",
+      "node",
+      "better-sqlite3",
+      "node-cron"
     ],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"

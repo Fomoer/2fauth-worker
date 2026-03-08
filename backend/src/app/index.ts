@@ -110,19 +110,4 @@ app.onError((err, c) => {
     }, statusCode as any);
 });
 
-// 6. 导出默认处理函数，实现前后端路由分发
-export default {
-    async fetch(request: Request, env: Bindings, ctx: any) {
-        // 将所有请求交给 Hono 处理
-        // Hono 会根据路由规则：
-        // 1. /api/* -> API 路由
-        // 2. * -> 静态资源 (env.ASSETS) + 全局中间件 (CSP)
-        return app.fetch(request, env, ctx);
-    },
-
-    // 定时任务入口
-    async scheduled(event: any, env: Bindings, ctx: any) {
-        console.log(`[Cron] Scheduled event triggered at ${new Date().toISOString()}`);
-        ctx.waitUntil(handleScheduledBackup(env));
-    }
-};
+export default app;

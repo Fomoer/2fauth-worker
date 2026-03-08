@@ -633,6 +633,7 @@
         "suggestions": {
             "suggestion_deploy_by_worker": "One-click Deploy to Worker: Go to Cloudflare Dashboard -> Workers & Pages -> 2fauth-worker -> Settings -> Variables and Secrets",
             "suggestion_deploy_by_gitaction": "Deploy via Github Action: Go to Forked Repository -> Settings -> Secrets and variables -> Actions",
+            "suggestion_deploy_by_docker": "Deploy via Docker Compose: Edit docker-compose.yml -> environment",
             "encryption_key_suggestion": "Please copy the high-strength random key pre-generated for you below, and set it as ENCRYPTION_KEY according to your deployment method.",
             "jwt_secret_suggestion": "Please copy the high-strength random key pre-generated for you below, and set it as JWT_SECRET according to your deployment method.",
             "oauth_allow_all_suggestion": "Depending on your deployment method, remove OAUTH_ALLOW_ALL or set its value to false.",

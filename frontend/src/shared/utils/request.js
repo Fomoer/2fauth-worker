@@ -1,5 +1,5 @@
 import { ElMessage } from 'element-plus'
-import router from '@/app/router'
+// Removed router import to solve circular dependency and facilitate physical redirects
 import { useAuthUserStore } from '@/features/auth/store/authUserStore'
 import { i18n } from '@/locales'
 
@@ -47,17 +47,13 @@ export async function request(url, options = {}) {
         // --- 安全拦截大网 (Security Shield Interceptor) ---
         // 如果后端检测到环节变量配置危险，抛出全局 403，立刻拦截死并跳转
         if (response.status === 403 && data.message === 'health_check_failed') {
-            if (!isNavigatingToSecurity && router && router.currentRoute.value.path !== '/health') {
-                isNavigatingToSecurity = true;
-                router.replace('/health').then(() => {
-                    setTimeout(() => { isNavigatingToSecurity = false }, 1000)
-                }).catch(() => {
-                    setTimeout(() => { isNavigatingToSecurity = false }, 1000)
-                })
+            if (window.location.pathname !== '/health') {
+                window.location.href = '/health';
             }
-            // 包装特定的错误抛出给 UI (方便 UI 的 catch 处理)
+            // Wrap a specific error to throw to UI
             const secErr = new Error('Security Check Failed');
-            secErr.data = data.data; // issues 数组
+            secErr.data = data.data; // issues array
+            secErr.isSecurity = true;
             throw secErr;
         }
 

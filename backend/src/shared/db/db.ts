@@ -1,13 +1,9 @@
-import { drizzle } from 'drizzle-orm/d1';
 import { inArray } from 'drizzle-orm';
-import { D1Database } from '@cloudflare/workers-types';
 import * as schema from '@/shared/db/schema';
 import { encryptData, decryptData } from '@/shared/utils/crypto';
 import { sanitizeInput } from '@/shared/utils/common';
 
-// 创建 Drizzle 实例的工厂函数
-export const createDb = (d1: D1Database) => drizzle(d1, { schema });
-
+// removed createDb function as DB is now instantiated at the root
 // 加密并序列化字段
 export async function encryptField(data: any, key: string) {
     const encrypted = await encryptData(data, key);
@@ -34,12 +30,11 @@ export async function decryptField(encryptedStr: string, key: string) {
  * @returns 成功插入的数量
  */
 export async function batchInsertVaultItems(
-    db: D1Database,
+    dbClient: any,
     items: any[],
     key: string,
     createdBy: string
 ): Promise<number> {
-    const dbClient = createDb(db);
 
     // 1. 准备数据 (规范化、加密、生成ID)
     const preparedItems = await Promise.all(items.map(async (item) => {
@@ -61,16 +56,23 @@ export async function batchInsertVaultItems(
         };
     }));
 
-    // 2. 批量写入：使用 D1 的 batch 功能避免连接超时。
-    // 分批写入，每批最多 50 条。
-    // 使用 onConflictDoNothing() 作为兜底，遇到重复 (service, account) 时静默跳过而非抛出 500
-    const CHUNK_SIZE = 50;
-    for (let i = 0; i < preparedItems.length; i += CHUNK_SIZE) {
-        const chunk = preparedItems.slice(i, i + CHUNK_SIZE);
-        const stmts = chunk.map(item => dbClient.insert(schema.vault).values(item).onConflictDoNothing());
-        await dbClient.batch(stmts as any);
+    // 2. 批量写入：兼容 D1 (支持 batch) 和 better-sqlite3 (不支持 batch)
+    // 检查是否支持 batch 方法 (D1) 或使用逐个插入 (better-sqlite3)
+    if (typeof dbClient.batch === 'function') {
+        // Cloudflare D1: 使用 batch 功能避免连接超时
+        const CHUNK_SIZE = 50;
+        for (let i = 0; i < preparedItems.length; i += CHUNK_SIZE) {
+            const chunk = preparedItems.slice(i, i + CHUNK_SIZE);
+            const stmts = chunk.map(item => dbClient.insert(schema.vault).values(item).onConflictDoNothing());
+            await dbClient.batch(stmts as any);
+        }
+    } else {
+        // better-sqlite3 (Docker 本地部署): 逐个插入
+        // 使用 onConflictDoNothing() 作为兜底，遇到重复 (service, account) 时静默跳过而非抛出 500
+        for (const item of preparedItems) {
+            await dbClient.insert(schema.vault).values(item).onConflictDoNothing().run();
+        }
     }
-
 
     return preparedItems.length;
 }
@@ -82,11 +84,10 @@ export async function batchInsertVaultItems(
  * @returns 成功删除的数量
  */
 export async function batchDeleteVaultItems(
-    db: D1Database,
+    dbClient: any,
     ids: string[]
 ): Promise<number> {
     if (!ids || ids.length === 0) return 0;
-    const dbClient = createDb(db);
 
     // Drizzle 的 inArray 操作非常简洁
     const CHUNK_SIZE = 50;

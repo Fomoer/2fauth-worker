@@ -358,15 +358,6 @@ main {
   margin-top: 10px;
 }
 
-/* 移动端特殊适配 */
-@media (max-width: 768px) {
-  .login-container {
-    margin: 15px 0px;
-    align-items: flex-start;
-    /* 移动端靠上显示，避免被软键盘完全遮挡(虽然登录页通常没键盘) */
-  }
-}
-
 /* OAuthCallback.vue */
 .callback-container {
   display: flex;

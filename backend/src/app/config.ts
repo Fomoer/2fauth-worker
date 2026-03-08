@@ -50,9 +50,9 @@ export const CSP_POLICY = {
     ],
 };
 
-// Cloudflare Workers 环境变量类型定义
+// Cloudflare Workers & Node.js 环境变量类型定义
 export type EnvBindings = {
-    DB: D1Database;
+    DB: any;
     OAUTH_GITHUB_CLIENT_ID: string;
     OAUTH_GITHUB_CLIENT_SECRET: string;
     OAUTH_GITHUB_REDIRECT_URI: string;

@@ -3,7 +3,7 @@ import { EnvBindings, AppError } from '@/app/config';
 import { authMiddleware } from '@/shared/middleware/auth';
 import { VaultService } from '@/features/vault/vaultService';
 import { VaultRepository } from '@/shared/db/repositories/vaultRepository';
-import { createDb } from '@/shared/db/db'; // Ensure D1 database is mapped correctly temporarily 
+// No createDb required here as DB is instantiated at the root (worker.ts/server.ts) and passed via c.env
 
 const vault = new Hono<{ Bindings: EnvBindings, Variables: { user: any } }>();
 

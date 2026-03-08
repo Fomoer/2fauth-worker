@@ -3,7 +3,7 @@ import { EnvBindings, AppError } from '@/app/config';
 import { BackupRepository } from '@/shared/db/repositories/backupRepository';
 import { encryptData, decryptData, encryptBackupFile } from '@/shared/utils/crypto';
 import { BackupProvider, WebDavProvider, S3Provider, TelegramProvider } from '@/features/backup/providers';
-import { createDb, decryptField } from '@/shared/db/db';
+import { decryptField } from '@/shared/db/db';
 import { vault as vaultTable, backupProviders } from '@/shared/db/schema';
 
 export class BackupService {
@@ -13,7 +13,7 @@ export class BackupService {
 
     constructor(env: EnvBindings) {
         this.env = env;
-        this.db = createDb(env.DB);
+        this.db = env.DB;
         this.repository = new BackupRepository(env.DB);
     }
 

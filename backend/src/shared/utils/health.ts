@@ -9,6 +9,7 @@ export interface HealthIssue {
     suggestion: string;
     deploy_by_worker: string;
     deploy_by_gitaction: string;
+    deploy_by_docker: string;
     missingFields?: string[];
 }
 
@@ -32,7 +33,8 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
             message: 'encryption_key_too_short',
             suggestion: 'encryption_key_suggestion',
             deploy_by_worker: 'suggestion_deploy_by_worker',
-            deploy_by_gitaction: 'suggestion_deploy_by_gitaction'
+            deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+            deploy_by_docker: 'suggestion_deploy_by_docker'
         });
     } else {
         passedChecks.push('encryption_key_passed');
@@ -47,7 +49,8 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
             message: 'jwt_secret_too_short',
             suggestion: 'jwt_secret_suggestion',
             deploy_by_worker: 'suggestion_deploy_by_worker',
-            deploy_by_gitaction: 'suggestion_deploy_by_gitaction'
+            deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+            deploy_by_docker: 'suggestion_deploy_by_docker'
         });
     } else {
         passedChecks.push('jwt_secret_passed');
@@ -61,7 +64,8 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
             message: 'oauth_allow_all_enabled',
             suggestion: 'oauth_allow_all_suggestion',
             deploy_by_worker: 'suggestion_deploy_by_worker',
-            deploy_by_gitaction: 'suggestion_deploy_by_gitaction'
+            deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+            deploy_by_docker: 'suggestion_deploy_by_docker'
         });
     } else {
         passedChecks.push('oauth_allow_all_passed');
@@ -76,7 +80,8 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
             message: 'allowed_users_empty',
             suggestion: 'allowed_users_suggestion',
             deploy_by_worker: 'suggestion_deploy_by_worker',
-            deploy_by_gitaction: 'suggestion_deploy_by_gitaction'
+            deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+            deploy_by_docker: 'suggestion_deploy_by_docker'
         });
     } else {
         passedChecks.push('allowed_users_passed');
@@ -104,6 +109,7 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
                 suggestion: 'github_config_suggestion',
                 deploy_by_worker: 'suggestion_deploy_by_worker',
                 deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+                deploy_by_docker: 'suggestion_deploy_by_docker',
                 missingFields: missing
             });
         } else {
@@ -127,6 +133,7 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
                 suggestion: 'telegram_config_suggestion',
                 deploy_by_worker: 'suggestion_deploy_by_worker',
                 deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+                deploy_by_docker: 'suggestion_deploy_by_docker',
                 missingFields: missing
             });
         } else {
@@ -151,6 +158,7 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
                 suggestion: 'google_config_suggestion',
                 deploy_by_worker: 'suggestion_deploy_by_worker',
                 deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+                deploy_by_docker: 'suggestion_deploy_by_docker',
                 missingFields: missing
             });
         } else {
@@ -175,6 +183,7 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
                 suggestion: 'nodeloc_config_suggestion',
                 deploy_by_worker: 'suggestion_deploy_by_worker',
                 deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+                deploy_by_docker: 'suggestion_deploy_by_docker',
                 missingFields: missing
             });
         } else {
@@ -199,6 +208,7 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
                 suggestion: 'gitee_config_suggestion',
                 deploy_by_worker: 'suggestion_deploy_by_worker',
                 deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+                deploy_by_docker: 'suggestion_deploy_by_docker',
                 missingFields: missing
             });
         } else {
@@ -224,6 +234,7 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
                 suggestion: 'cloudflare_config_suggestion',
                 deploy_by_worker: 'suggestion_deploy_by_worker',
                 deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+                deploy_by_docker: 'suggestion_deploy_by_docker',
                 missingFields: missing
             });
         } else {
@@ -240,7 +251,8 @@ export const runHealthCheck = (env: EnvBindings): HealthCheckResult => {
             message: 'no_provider_configured',
             suggestion: 'no_provider_suggestion',
             deploy_by_worker: 'suggestion_deploy_by_worker',
-            deploy_by_gitaction: 'suggestion_deploy_by_gitaction'
+            deploy_by_gitaction: 'suggestion_deploy_by_gitaction',
+            deploy_by_docker: 'suggestion_deploy_by_docker'
         });
     } else {
         passedChecks.push('oauth_provider_configured');

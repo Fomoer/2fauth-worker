@@ -1,95 +1,144 @@
-
 # 2FAuth Worker
 
-**基于 Cloudflare Workers + D1 的新型 Serverless 二步验证 (2FA/TOTP) 管理器**
+[English](README_EN.md) | 中文
 
-[![Deploy to Cloudflare Workers](https://github.com/nap0o/2fauth-worker/actions/workflows/deploy.yml/badge.svg)](https://github.com/nap0o/2fauth-worker/actions/workflows/deploy.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Vue3](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=flat&logo=vue.js)](https://vuejs.org/)
+**支持 Cloudflare Serverless 与 Docker 私有化部署的高安全、轻量级二步验证 (2FA/TOTP) 管理系统**
+
+
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?style=flat&logo=cloudflare)](https://workers.cloudflare.com/)
+[![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/nap0o/2fauth-worker)
+[![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-181717?style=flat&logo=github)](https://github.com/nap0o/2fauth-worker/actions)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-red.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
+[**点击此处查看 Demo 演示**](https://2fa.nezha.pp.ua)
 
-[**Demo演示**](https://2fa.nezha.pp.ua)  https://2fa.nezha.pp.ua
-
-- 演示站配置了 `OAUTH_ALLOW_ALL=true`变量, 默认允许任何用户登录,正常部署切记 **不要主动配置OAUTH_ALLOW_ALL变量** | **不要主动配置OAUTH_ALLOW_ALL变量** | **不要主动配置OAUTH_ALLOW_ALL变量**
-- 演示站数据可以任意修改、删除
-
----
-
-**2FAuth Worker** 是一个安全、轻量级、无服务器的 TOTP 二步验证管理工具。它让你完全掌控自己的 2FA 数据，支持多端跨平台使用，无需购买任何服务器，**完全免费部署在 Cloudflare 边缘网络上**。
-
-## ✨ 核心优势与功能
-
-### 🌩️ 真正的 Serverless 架构
-- **零成本运维**：由 Cloudflare Workers 处理后端逻辑，Cloudflare D1 (SQLite) 存储数据，完全抛弃传统服务器。
-- **全球边缘加速**：应用直接运行在 Cloudflare 全球数百个数据中心，极速响应。
-
-### 📱 渐进式 Web 应用 (PWA) 
-- **安装如原生应用**：完美支持 PWA，你可以将 2FAuth 直接安装到电脑桌面或手机主屏幕，享受无浏览器边框的沉浸沉浸式极致体验。
-- **真正的离线可用**：支持基于 Service Worker 的深度离线缓存，即使在**断网、无信号**的极端环境下，应用依然能秒开并为你生成准确无误的动态验证码。
-
-### 🔐 极简却强大的身份验证
-- 抛弃传统的账密注册，全面拥抱 **OAuth 2.0 第三方登录**。
-- 支持对接：**GitHub, Google, Telegram, Cloudflare Access (Zero Trust), Gitee, NodeLoc**。
-- 支持基于邮箱/用户名的**硬核白名单控制**，谢绝任何陌生人访问你的 2FA 数据库。
-
-### 🛡️ 固若金汤的数据安全
-- **私有数据库**：你的验证器密钥永远只存在于你的私有 D1 数据库中。
-- **高强度加密存储**：数据库中的 TOTP Secret 强制进行 AES 加密存储。
-- **加密导出**：支持标准 JSON、2FAS 以及采用 AES-GCM 高强度加密打包的定制导出格式。
-
-### 🧰 全能的实用工具箱
-除了 2FA 管理外，系统原生内置了多款高频安全工具：
-- 🔑 **高强度密码生成器**
-- ⏳ **时间校准器** (精准检测并解决 TOTP 失效的时钟偏移问题)
-- 📷 **二维码解析提取器**
-- 🛡️ **TOTP 密钥分析与生成工具**
-
-### 🔄 企业级数据灾备
-- **WebDAV / S3 / Telegram 自动备份**：连接你的Nextcloud、阿里云 OSS 或 AWS S3，或者 Telegram Bot。
-- 自动化定时任务（Cron Triggers）实现无感数据双重灾备。
+> 💡 **提示**：演示站开启了全员登录模式，数据可随意修改、删除。正式部署请务必设置白名单。
 
 ---
 
-## 🚀 详细部署指南
+## 🌟 为什么选择 2FAuth Worker？
 
-本项目支持 2 种部署方式：**一键部署到 Cloudflare Workers** 和 **通过 GitHub Actions 部署**。请根据你的需要选择其中一种即可。
+不管是白嫖 Cloudflare 的免费额度，还是部署在自家的 NAS 或小主机上，2FAuth Worker 都能为你提供**最安全**、最便捷的 2FA 密钥管理体验。
+
+### 🕊️ 真正的“全方位”部署 (Dual-Mode)
+*   **白嫖党最爱**：一键部署到 Cloudflare Workers，零成本、零维护、全球加速。
+*   **私有云极客**：支持 Docker 部署，数据锁在自家硬盘里，局域网断网也能用。
+
+### 📱 像原生 App 一样好用 (PWA)
+*   **沉浸式体验**：支持安装到电脑桌面或手机主屏幕，没有浏览器边框的干扰。
+*   **断网也不怕**：得益于先进的离线缓存技术，即便在地下室或飞机上（无网络），它依然能秒开并为你生成精准的验证码。
+
+### 🛡️ “拉闸式”安全护卫 (Health Shield)
+*   我们内置了智能安检逻辑。如果程序检测到关键密钥丢失或配置不当，它会立即“拉闸”阻断访问，防止你的数据因环境不安全而暴露。
+
+### 📦 丢不了的“后悔药” (Multi-channel Backup)
+*   支持 WebDAV、S3 云存储或 Telegram 机器人自动备份。即使手机丢了、系统重装了，甚至 Cloudflare 账号没了，你也能通过备份瞬间找回所有账号。
 
 ---
 
-### 方式一：一键部署到 Cloudflare Workers（推荐，新手友好）
+## 📊 强力对比：为什么我们需要 2FAuth Worker？
 
-这是最简便的部署方式，只需点击下方按钮，按照页面向导提示操作即可快速上线。
+| 功能特性 | **2FAuth Worker** (本项目) | Google / MS Auth | Authy | 2FAS / Aegis | 1Password / Bitwarden |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **数据所有权** | **✅ 完全掌控 (私有云/NAS)** | ❌ 绑定大厂云端 | ❌ 锁定在厂商服务器 | ✅ 本地文件/私有云 | ⚠️ 托管在三方平台 |
+| **多端访问** | **✅ 网页+PWA (全平台)** | ⚠️ 仅手机 App | ❌ 桌面端已关停 | ⚠️ 仅手机 App | ✅ 全平台支持 |
+| **恢复便利性** | **✅ 多通道自动备份 (TG/S3)** | ⚠️ 换手机导入麻烦 | ✅ 云同步 | ⚠️ 需维护备份文件 | ✅ 云同步 |
+| **隐私保护** | **✅ 匿名部署，无追踪** | ⚠️ 大厂账号绑定 | ⚠️ 强制绑定手机号 | ✅ 无追踪 | ✅ 安全但目标较大 |
+| **离线可用性** | **✅ 支持 (PWA 强力缓存)** | ✅ 支持 | ✅ 支持 | ✅ 支持 | ✅ 支持 |
+| **部署成本** | **✅ 0 成本 (CF Serverless)** | ✅ 免费 | ✅ 免费 | ✅ 免费 | 💰 订阅/自建较重 |
+| **厂商倒闭风险** | **✅ 源码在手，永不丧失** | ⚠️ 生态强制迁移风险 | 🚨 随时下线(如 PC 端) | ✅ 开源可控 | ⚠️ 订阅制/闭源风险 |
 
+> 🎯 **小结**：**2FAuth Worker** 既有 1Password 的多端便利，又有开源 App 的隐私性，更有 Serverless 的零成本。**支持 Telegram 机器人自动备份**更是解决了所有 Web 端和 App 端的“丢数据焦虑”，让安全触手可得。
+
+---
+
+## 🚀 部署指南 (三选一)
+
+### 方式 A：一键部署到 Cloudflare Worker (最快，新手推荐)
+
+这是最省心的方式，完全不需要自己的服务器，由 Cloudflare 免费为你托管。
+
+#### 1. 一键全自动部署
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/nap0o/2fauth-worker)
 
-**部署说明：**
+#### 2. 注意事项与授权指引
+*   在部署向导中，你需要授权 Cloudflare 读取该仓库（系统会自动在你的 GitHub 账号下创建一个私有克隆）。
+*   按照页面提示填写 **GitHub Client ID/Secret** 等参数（详见下文配置说明）。
+<details>
+<summary>点击查看：授权指引示意图</summary>  
+<img height="400" src="https://github.com/user-attachments/assets/cb64bc2f-6dcc-40cb-a781-3bc2c7bc5b28" />
+<img height="400" src="https://github.com/user-attachments/assets/3f186ea6-80f5-4d78-b90f-724af33a73ae" />
+<img height="400" src="https://github.com/user-attachments/assets/c1f2d5ee-2f3f-47c2-969f-00308cadff21" />
+<img height="600" src="https://github.com/user-attachments/assets/51d6e702-142e-4f58-8f02-c4a0bbcf009c" />
+</details>
 
-1. 在部署之前，建议你先准备好你打算使用的**第三方登录（OAuth）配置**，例如 GitHub 的 Client ID / Secret（详见下文：[获取第三方登录密钥](#2-配置第三方登录)）。
-2. Fork 本仓库
-2. 点击上方的 **Deploy to Cloudflare Workers** 按钮进入 Cloudflare 部署向导。
-3. 根据向导提示，授权 Cloudflare 读取该仓库（系统会自动在你的 GitHub 账号下创建一个该项目的私有克隆）。
+#### 3. 添加如下变量和机密
+  *   `ENCRYPTION_KEY`：32位以上随机密钥。
+  *   `JWT_SECRET`：32位以上随机JWT密钥。
+  *   `OAUTH_ALLOWED_USERS`：你的邮箱@example.com
+  *   `OAUTH_GITHUB_CLIENT_ID`：你的ID
+  *   `OAUTH_GITHUB_CLIENT_SECRET`：你的Secret
+  *   `OAUTH_GITHUB_REDIRECT_URI`：你的回调地址
 
-**授权 Cloudflare 读取 Github 仓库 步骤：**
-
-<img height="400" alt="0001" src="https://github.com/user-attachments/assets/cb64bc2f-6dcc-40cb-a781-3bc2c7bc5b28" />
-<img  height="500" alt="0002" src="https://github.com/user-attachments/assets/3f186ea6-80f5-4d78-b90f-724af33a73ae" />
-<img  height="500" alt="0003" src="https://github.com/user-attachments/assets/c1f2d5ee-2f3f-47c2-969f-00308cadff21" />
-
-4. 点击`创建和部署`，完成部署！
-5. 访问专属的 `xxx.workers.dev` 域名，按照页面提示完成初始化配置。
+<details>
+<summary>点击查看：添加变量和机密示意图</summary>
+<img height="600" src="https://github.com/user-attachments/assets/51d6e702-142e-4f58-8f02-c4a0bbcf009c" />
+</details>
 
 ---
 
-### 方式二：通过 GitHub Actions 自动化部署（适合高级用户）
+### 方式 B：部署到 Docker (适合 NAS / 自有服务器用户)
 
-如果你需要更深入定制或打算持续集成，可以选择原生的 GitHub Actions 自动部署流程。
+如果你想把数据完全掌控在自己手里，或者需要在内网环境运行。
+
+#### 1. 使用 Docker Compose (推荐)
+在你的服务器上创建 `docker-compose.yml`：
+```yaml
+services:
+  2fauth:
+    image: nap0o/2fauth-worker:latest
+    container_name: 2fauth-worker
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - ENCRYPTION_KEY=32位以上随机密钥
+      - JWT_SECRET=32位以上随机JWT密钥
+      - OAUTH_ALLOWED_USERS=你的邮箱@example.com
+      # 至少配置一种登录方式 (以 GitHub 为例)
+      - OAUTH_GITHUB_CLIENT_ID=你的ID
+      - OAUTH_GITHUB_CLIENT_SECRET=你的Secret
+      - OAUTH_GITHUB_REDIRECT_URI=https://你的域名/oauth/callback
+    restart: unless-stopped
+```
+运行 `docker compose up -d` 即可。
+
+#### 2. 使用 Docker Run
+```bash
+docker run -d --name 2fauth-worker \
+  -p 3000:3000 \
+  -v $(pwd)/data:/app/data \
+  -e ENCRYPTION_KEY=32位以上随机密钥 \
+  -e JWT_SECRET=32位以上随机JWT密钥 \
+  -e OAUTH_ALLOWED_USERS=你的邮箱 \
+  -e OAUTH_GITHUB_CLIENT_ID= \
+  -e OAUTH_GITHUB_CLIENT_SECRET= \
+  -e OAUTH_GITHUB_CLIENT_REDIRECT_URI= \
+  nap0o/2fauth-worker:latest 
+```
+
+---
+
+### 方式 C：通过 GitHub Actions 部署 (适合进阶用户)
+
+如果你想对代码进行持续部署，或者更精确地管理数据库，建议使用此方式。
 
 #### 1. 准备工作
-1. 注册一个 [Cloudflare](https://dash.cloudflare.com/) 账号。
-2. **Fork** 本仓库到你的 GitHub 账户。
+*   在 Cloudflare 控制面板获取 **API 令牌**（需要 `编辑 Cloudflare Workers` 权限）。
+<details>
+<summary>点击查看：获取 Cloudflare Worker 部署令牌的具体步骤</summary>
 
-#### 2. 获取 Cloudflare Worker部署令牌
 1. 登录 Cloudflare Dashboard
 2. [前往获取](https://dash.cloudflare.com/profile/api-tokens)  https://dash.cloudflare.com/profile/api-tokens
 3. 点击“创建令牌” 
@@ -101,104 +150,102 @@
 <img width="500"  alt="image" src="https://github.com/user-attachments/assets/6487aa6e-e505-4980-aef4-e08172116746" /><br />
 
 <img width="800"  alt="image" src="https://github.com/user-attachments/assets/d4c737f7-2d9f-4cfb-a712-b1af416c8ef6" />
+</details>
 
-#### 3. 配置 Cloudflare D1 数据库
-1. 登录 Cloudflare Dashboard。
-2. 依次点击左侧菜单的 **存储和数据库** -> **D1 SQL 数据库**。
-3. 点击 **创建数据库**，命名为 `2fauth-db` (或自定义名称)。
-4. 创建成功后，复制数据库详情页提供的 **`Database ID`**，备用。
+*   在 `存储和数据库` -> `D1 SQL 数据库` 中创建一个名为 `2fauth-db` 的数据库，并记录其 **Database ID**。
 
-#### 4. 配置 GitHub Actions Secrets
-前往你 Fork 仓库的 **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret**，添加下列关键参数：
+#### 2. 配置仓库
+1.  **Fork** 本仓库到你的 GitHub 账号。
+2.  前往仓库的 `Settings` -> `Secrets and variables` -> `Actions`。
+3.  添加如下 Secrets：
+  *   `CLOUDFLARE_ACCOUNT_ID`：你的 CF 账户 ID。
+  *   `CLOUDFLARE_API_TOKEN`：刚刚生成的 API 令牌。
+  *   `CLOUDFLARE_D1_DATABASE_ID`：D1 数据库的 ID。
+  *   `CLOUDFLARE_D1_DATABASE_NAME`：D1 数据库的名称。
+  *   `ENCRYPTION_KEY`：32位以上随机密钥。
+  *   `JWT_SECRET`：32位以上随机JWT密钥。
+  *   `OAUTH_ALLOWED_USERS`：你的邮箱@example.com
+  *   `OAUTH_GITHUB_CLIENT_ID`：你的ID
+  *   `OAUTH_GITHUB_CLIENT_SECRET`：你的Secret
+  *   `OAUTH_GITHUB_REDIRECT_URI`：你的回调地址
 
-- **基础平台令牌必填：**
-  - `CLOUDFLARE_ACCOUNT_ID`：你的 CF 账户 ID (CF 面板的概述页右下角可以找到)
-  - `CLOUDFLARE_API_TOKEN`：刚刚在“步骤 2”获取的部署令牌
-  - `CLOUDFLARE_D1_DATABASE_ID`：刚刚在“步骤 3”获取的 D1 数据库 ID
-  - `CLOUDFLARE_D1_DATABASE_NAME`：默认为 `2fauth-db`
-- **系统安全与 OAuth 登录密钥：**
-  - `ENCRYPTION_KEY`、`JWT_SECRET` 及你要使用的 OAuth 登录配置，请统一查阅下方的 **[🧩 通用环境变量配置说明](#-通用环境变量配置说明)** 进行添加。
+<details>
+<summary>点击查看：Secrets 配置示例图</summary>  
+<img width="600" alt="Secrets 配置示例" src="https://github.com/user-attachments/assets/ef907021-303d-4fd5-ba3e-913e8b0014a5" />
+</details>
 
-#### 5. 触发自动化部署
-1. 进入你的 GitHub 仓库的 **Actions** 页面。
-2. 找到 `Deploy to Cloudflare Workers` 工作流。
-3. 点击 **Run workflow** 手动触发执行（或者随便 Push 一下 main 分支）。
-4. 等待自动化脚本完成，部署成功后，控制台会输出你的 `xxx.workers.dev` 访问链接。
-6. 访问专属的 `xxx.workers.dev` 域名，按照页面提示完成初始化配置。
+#### 3. 触发部署
+*   前往仓库的 `Actions` 页面，手动运行 `Deploy to Cloudflare Workers` 工作流，或向 `main` 分支推送代码即可。
 
-**手动触发deploy**
-
-<img width="800" height="1350" alt="image" src="https://github.com/user-attachments/assets/b2891365-5c1a-4a46-83c6-5cd53dd4b895" />
-
-**配置Secrets and variables示例**
-
-<img width="800"  alt="image" src="https://github.com/user-attachments/assets/ef907021-303d-4fd5-ba3e-913e8b0014a5" />
+<details>
+<summary>点击查看：手动触发部署示例图</summary>  
+<img width="600" alt="手动触发部署" src="https://github.com/user-attachments/assets/b2891365-5c1a-4a46-83c6-5cd53dd4b895" />
+</details>
 
 ---
 
-### 🧩 通用环境变量配置说明
+## 🧩 关键环境变量配置
 
-以下环境变量，不论是通过 **"方案一:一键部署"** 还是 **"方案二:GitHub Actions"**，都需要在Worker设置页面或仓库 Secrets 中按需配置：
+不论使用哪种方式部署，以下参数都非常重要：
 
-#### 1. 核心安全参数（必填！）
-
-> ⚠️ **高危警告：关于 ENCRYPTION_KEY 的修改风险**
-> `ENCRYPTION_KEY` 是用于加密数据库中 2FA 核心令牌种子的底层主密钥。**一旦系统投入生产使用并存入数据，请绝对不要再修改此环境变量的值！** 如果该密钥丢失或更改，数据库里旧的数据将无法解密！
-
-| 变量 / Secret Name | 说明 | 示例值 |
+| 变量名 | 作用 | 获取建议 |
 | :--- | :--- | :--- |
-| `ENCRYPTION_KEY` | 对数据库持久化2FA核心密种加密的主密钥 | **必填**。建议使用 `openssl rand -hex 32` 生成，务必自己保存好备份。 |
-| `JWT_SECRET` | 签发安全会话状态的系统密钥 | **必填**。越长越好, 建议输入 32 位随机字符。 |
-| `OAUTH_ALLOWED_USERS` | 允许登录系统的白名单：支持填入邮箱，或 Telegram数字ID | **必填**。`me@example.com,you@example.com,5341743823` (多个配置必须用逗号分隔) |
+| `ENCRYPTION_KEY` | **核心：** 数据库加密密钥 | 设好后**绝对不要改**！改了旧数据就解不开了。建议设为 32 位随机字符。 |
+| `JWT_SECRET` | 登录状态密钥 | 随便填一段长字符串。 |
+| `OAUTH_ALLOWED_USERS` | **白名单：** 只有谁能进 | 填你的邮箱或 Telegram 数字 ID，多个用逗号隔开。 |
 
-#### 2. 配置第三方登录
-*系统支持多种登录方式，你**至少需要选择一种进行环境配置***。我们最推荐使用 `GitHub` 作为后台登录。
-
-**使用 GitHub 登录获取办法**
+### 如何配置第三方登录？
+我们最推荐使用 **GitHub 登录**：
 1. 访问 GitHub `Settings` -> `Developer Settings` -> `OAuth Apps` -> **New OAuth App**。
-2. 填写应用信息：
-   - **名称**: `2FAuth Worker`
-   - **Homepage URL**: 填入你预期的站点域名，例如 `https://2fa.yourdomain.workers.dev` (部署后可绑定自定义域名)
-   - **Authorization callback URL**: 必须填写 `https://<你的Homepage URL>/oauth/callback`
-3. 保存并复制生成的 **`Client ID`** 和 **`Client Secret`**。
+2. 回调地址 (Callback URL) 必须填写：`https://你的域名/oauth/callback`。
+3. 拿到 `Client ID` 和 `Client Secret` 后填入上述环境变量中。
 
-<img width="800"  alt="image" src="https://github.com/user-attachments/assets/aa03b15f-deb2-4e48-bf4b-e57be342adbb" />
+<details>
+<summary>点击查看：OAuth 配置示意图</summary>  
 
-**使用 Telegram 登录获取办法**
-1. 在 Telegram 中搜索并添加官方机器人 **[@BotFather](https://t.me/BotFather)**。
-2. 发送 `/newbot` 指令，按照提示为你的 2FAuth 创建机器人，记录它的 **`Bot Token`**（如 `123456:ABC-DEF1234...`）。
-3. 记录机器人的 **`Bot Name`**（也就是你刚设置的以 bot 结尾的用户名，例如 `my_2fa_bot`）
-4. （非常重要）发送 `/setdomain` 指令，选择此机器人，然后发送你的应用域名（不需要 `https://`，例如：`2fa.yourdomain.workers.dev`）。
-5. （非常重要）由于我们要使用无服务器直接验证，需要配置 Webhook，复制下方链接在浏览器中访问一次注册 Webhook：
-```url
-https://api.telegram.org/bot<你的BotToken>/setWebhook?url=https://<你的应用域名>/api/telegram/webhook
-```
+<img width="600" alt="OAuth 配置示意" src="https://github.com/user-attachments/assets/aa03b15f-deb2-4e48-bf4b-e57be342adbb" />
+</details>
 
-**依据你选取的登录平台填入所需变量（任选一对即可）：**
+### 依据你选取的登录平台，在环境变量中填入对应参数（任选其一即可）：
 
-> 如果你使用 GitHub 登录，就在环境变量里配置 GitHub 那一行提供的所有变量选项。其它平台类似。
-
-| 平台 | Client ID 变量群 | Client Secret 变量群 | Redirect URI 回调变量群 (示例:`https://xxx.dev/oauth/callback`) |
+| 平台 | Client ID 变量名 | Client Secret 变量名 | Redirect URI 回调变量名 (示例: `https://xxx.dev/oauth/callback`) |
 | :--- | :--- | :--- | :--- |
 | **GitHub** | `OAUTH_GITHUB_CLIENT_ID` | `OAUTH_GITHUB_CLIENT_SECRET` | `OAUTH_GITHUB_REDIRECT_URI` |
-| **Telegram** | `OAUTH_TELEGRAM_BOT_NAME`*(填你的Bot名称)* | `OAUTH_TELEGRAM_BOT_TOKEN`*(填Bot的Token密钥)* | *Telegram 无需 URI 回调变量* |
+| **Telegram** | `OAUTH_TELEGRAM_BOT_NAME` | `OAUTH_TELEGRAM_BOT_TOKEN` | *Telegram 无需 URI 回调变量* |
 | **Google** | `OAUTH_GOOGLE_CLIENT_ID` | `OAUTH_GOOGLE_CLIENT_SECRET` | `OAUTH_GOOGLE_REDIRECT_URI` |
-| **Cloudflare Access** | `OAUTH_CLOUDFLARE_CLIENT_ID` | `OAUTH_CLOUDFLARE_CLIENT_SECRET` | `OAUTH_CLOUDFLARE_REDIRECT_URI`<br>*(该平台还缺一不可：需额外配置 `OAUTH_CLOUDFLARE_ORG_DOMAIN`，如: `https://<team>.cloudflareaccess.com`)* |
+| **Cloudflare Access** | `OAUTH_CLOUDFLARE_CLIENT_ID` | `OAUTH_CLOUDFLARE_CLIENT_SECRET` | `OAUTH_CLOUDFLARE_REDIRECT_URI` (需配置 `OAUTH_CLOUDFLARE_ORG_DOMAIN`) |
 | **Gitee** | `OAUTH_GITEE_CLIENT_ID` | `OAUTH_GITEE_CLIENT_SECRET` | `OAUTH_GITEE_REDIRECT_URI` |
 | **NodeLoc** | `OAUTH_NODELOC_CLIENT_ID` | `OAUTH_NODELOC_CLIENT_SECRET` | `OAUTH_NODELOC_REDIRECT_URI` |
 
+---
+
+#### 💡 使用 Telegram 登录的特殊配置：
+1. 在 Telegram 搜索并添加官方机器人 **[@BotFather](https://t.me/BotFather)**，按照提示创建机器人。
+2. 记录生成的 **Token** (`OAUTH_TELEGRAM_BOT_TOKEN`) 和 **用户名** (`OAUTH_TELEGRAM_BOT_NAME`)。
+3. 请务必向 @BotFather 发送 `/setdomain` 指令，选择您的机器人，并输入您的**应用域名**（不需要 `https://`）。
+4. 由于本项目是 Serverless 架构，您需要手动注册 Webhook。将下方链接中的 `<Token>` 和 `<域名>` 替换后，在浏览器中访问一次：
+   `https://api.telegram.org/bot<Token>/setWebhook?url=https://<域名>/api/telegram/webhook`
 
 ---
 
-## 💻 本地极客开发 (Local Development)
+## 🔒 深度安全审计 (Security Auditing)
 
-如果你想自己修改 UI 或增加功能，可以很方便地在本地把跑起来（需要 Node.js 20+）：
+为了保护您的账号安全，2FAuth Worker 在设计上采取了“多重锁死”策略：
+
+1.  **静态数据全加密**：数据库中存储的所有 TOTP 密钥种子（Secret）都经过 AES 高强度加密。即使数据库文件不幸泄露，黑客在没有 `ENCRYPTION_KEY` 的情况下也无法获得原始密钥。
+2.  **访问白名单制度**：系统拒绝任何通过用户名/密码的传统注册。只有在 `OAUTH_ALLOWED_USERS` 配置列表中的用户才能进入系统，拒绝任何陌生人蹭用。
+3.  **智能环境感知 (Smart Shield)**：系统在启动和运行时会持续检查运行环境（如环境变量是否存在、数据库是否异常）。一旦发现异常，系统将拒绝生成任何验证码并进入保护模式。
+4.  **端到端隔离**：前端生成的敏感操作逻辑经过严格过滤，严禁任何 XSS (跨站脚本) 攻击。
+5.  **隐私第一**：本项目不包含任何追踪代码、分析工具或第三方统计插件。你的数据只属于你。
+
+---
+
+## 🛠️ 参与开发 (Local Development)
 
 ```bash
+# 1. 克隆并安装依赖
 git clone https://github.com/nap0o/2fauth-worker.git
 cd 2fauth-worker
-
-# 1. 给前后端分别安装依赖
 npm install
 
 # 2.复制 example.dev.vars 为 .dev.vars, 按说明写入开发用的测试密钥
@@ -207,32 +254,11 @@ cp example.dev.vars .dev.vars
 # 3. 初始化本地的 SQLite Sandbox 数据库
 npx wrangler d1 execute 2fauth-db-dev --local --env dev --file=backend/schema.sql
 
-# 4. 终端启动应用
+# 4. 运行本地开发
 npm run dev
 ```
 
 ---
 
-## 🏗️ 全栈项目架构
-
-本项目遵循现代化的 **Feature-based 垂直模块化架构**：
-
-- **Frontend (Vue 3 + Vite)**：完全模块化，包含 `vault` (账户管理), `backup` (云端灾备), `auth` (身份验证), `tools` (工具箱) 等独立领域模块。状态管理由 Pinia 驱动。
-- **Backend (Hono.js)**：极其轻量的边缘框架。配合 `Drizzle ORM` 丝滑读写 D1 数据库。
-- **前后端天然一体**：由单代码库 (Monorepo) 管理，GitHub Actions 一次触发，同时构建前端产物并以 `Asset/SPA` 模式挂载至 Worker。
-
----
-
-## 🛡️ 安全性声明 (Security Policy)
-
-本项目涉及高度敏感的 2FA 认证种子数据的云端存储，在架构安全方面我们做出了如下强制约束：
-
-1. **密钥隔离设计**：`JWT_SECRET` (用于签发 Session/Device Token) 与 `ENCRYPTION_KEY` (用于静态加密数据库的核心密码) 必须从 Cloudflare 环境变量层面强制分离，不要设置相同变量值。任何 `ENCRYPTION_KEY` 缺失导致的系统空缺都会被高危拦截拒绝启动，从而遏制降级攻击。
-2. **零容忍 XSS (跨站脚本) 防御策略**：本项目的前端严格禁止任何未经深度转义的动态 HTML（`v-html` 或等效方法）直接上树。任何第三方代码引入必须经过人工审计。
-
-遇到任何安全性相关的 Issue，请在提交时标记为 [Security] 以获得最高优的处理优先级。
-
----
-
-## 📄 License
-本项目基于 [MIT License](LICENSE) 协议完全开源。你可以自由地二次开发、分发或商业使用，只要包含原作者和版权声明即可。
+## 📄 开源协议
+本项目基于 [GNU AGPL v3](LICENSE) 协议开源。作为一款涉及 2FA 安全与网络服务的软件，我们坚持维护开源社区的公平性：如果您在服务器上运行本项目的修改版本并向公众提供服务，您必须向用户开放您的源代码。
