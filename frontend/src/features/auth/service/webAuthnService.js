@@ -66,5 +66,15 @@ export const webAuthnService = {
      */
     async deleteCredential(id) {
         return await request(`/api/oauth/webauthn/credentials/${id}`, { method: 'DELETE' });
+    },
+
+    /**
+     * 修改凭证名称
+     */
+    async updateCredentialName(id, name) {
+        return await request(`/api/oauth/webauthn/credentials/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ name })
+        });
     }
 };

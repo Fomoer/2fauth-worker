@@ -36,7 +36,7 @@
 
 ---
 
-## 📊 功能对比：为什么选择 2FAuth Worker？
+## 📊 同类型产品功能对比
 
 | 功能特性 | **2FAuth Worker** (本项目) | Google / MS Auth | Authy | 2FAS / Aegis | 1Password / Bitwarden |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -75,8 +75,8 @@
   *   `ENCRYPTION_KEY`：32位以上随机密钥。
   *   `JWT_SECRET`：32位以上随机JWT密钥。
   *   `OAUTH_ALLOWED_USERS`：你的邮箱@example.com
-  *   `OAUTH_GITHUB_CLIENT_ID`：你的ID
-  *   `OAUTH_GITHUB_CLIENT_SECRET`：你的Secret
+  *   `OAUTH_GITHUB_CLIENT_ID`：你的CLIENT_ID
+  *   `OAUTH_GITHUB_CLIENT_SECRET`：你的CLIENT_SECRET
   *   `OAUTH_GITHUB_REDIRECT_URI`：你的回调地址
 
 <details>
@@ -134,6 +134,16 @@ docker run -d --name 2fauth-worker \
 如果你想对代码进行持续部署，或者更精确地管理数据库，建议使用此方式。
 
 #### 1. 准备工作
+
+*   在 `存储和数据库` -> `D1 SQL 数据库` 中创建一个名为 `2fauth-db` 的数据库，并记录其 **Database ID**。
+<details>
+<summary>点击查看：创建 D1 SQL 数据库的具体步骤</summary>
+<img height="500" alt="image" src="https://github.com/user-attachments/assets/80824e1b-73f8-4d13-992c-a51dc4e53308" /><br />
+<img height="350" alt="image" src="https://github.com/user-attachments/assets/560c9977-2f89-4135-839d-bdf37208bfdc" /><br />
+<img height="350" alt="image" src="https://github.com/user-attachments/assets/25261345-8da6-40de-86b6-a23e910e737d" />
+</details>
+
+
 *   在 Cloudflare 控制面板获取 **API 令牌**（需要 `编辑 Cloudflare Workers` 权限）。
 <details>
 <summary>点击查看：获取 Cloudflare Worker 部署令牌的具体步骤</summary>
@@ -147,11 +157,8 @@ docker run -d --name 2fauth-worker \
 7. 复制生成的令牌
 
 <img width="500"  alt="image" src="https://github.com/user-attachments/assets/6487aa6e-e505-4980-aef4-e08172116746" /><br />
-
 <img width="800"  alt="image" src="https://github.com/user-attachments/assets/d4c737f7-2d9f-4cfb-a712-b1af416c8ef6" />
 </details>
-
-*   在 `存储和数据库` -> `D1 SQL 数据库` 中创建一个名为 `2fauth-db` 的数据库，并记录其 **Database ID**。
 
 #### 2. 配置仓库
 1.  **Fork** 本仓库到你的 GitHub 账号。
@@ -221,9 +228,11 @@ docker run -d --name 2fauth-worker \
 1. 在 Telegram 搜索并添加官方机器人 **[@BotFather](https://t.me/BotFather)**，按照提示创建机器人。
 2. 记录生成的 **Token** (`OAUTH_TELEGRAM_BOT_TOKEN`) 和 **用户名** (`OAUTH_TELEGRAM_BOT_NAME`)。
 3. 请务必向 @BotFather 发送 `/setdomain` 指令，选择您的机器人，并输入您的**应用域名**（不需要 `https://`）。
-4. 由于本项目是 Serverless 架构，您需要手动注册 Webhook。将下方链接中的 `<Token>` 和 `<域名>` 替换后，在浏览器中访问一次：
+4. 由于本项目是 Serverless 架构，您需要手动注册 Webhook。<br/>
+   将下方链接中的 `<Token>` 和 `<域名>` 替换后，在浏览器中访问一次：<br/>
    `https://api.telegram.org/bot<Token>/setWebhook?url=https://<域名>/api/telegram/webhook`
-5. 将 `OAUTH_TELEGRAM_BOT_TOKEN`、`OAUTH_TELEGRAM_BOT_NAME` 和 `OAUTH_TELEGRAM_REDIRECT_URI` 填入环境变量。
+
+5. 将 `OAUTH_TELEGRAM_BOT_TOKEN`、`OAUTH_TELEGRAM_BOT_NAME` 填入环境变量。
 
 #### 如何配置Cloudflared Access 第三方登录？
 1.  进入 **Cloudflare Zero Trust Dashboard** -> **Access** -> **Applications**。
@@ -257,7 +266,7 @@ docker run -d --name 2fauth-worker \
 4.  **端到端隔离**：前端生成的敏感操作逻辑经过严格过滤，严禁任何 XSS (跨站脚本) 攻击。
 5.  **隐私第一**：本项目不包含任何追踪代码、分析工具或第三方统计插件。你的数据只属于你。
 
-> 📊 [**点击查看由 GitHub Actions 自动生成的实时安全审计报告**](https://github.com/nap0o/2fauth-worker/blob/security-audit/README.md)
+> 📊 [**点击查看由 GitHub Actions 自动生成的安全审计报告**](https://github.com/nap0o/2fauth-worker/blob/security-audit/README.md)
 
 ---
 

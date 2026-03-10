@@ -195,6 +195,16 @@ export class WebAuthnService {
     }
 
     /**
+     * 更新凭证名称
+     */
+    async updateCredentialName(credentialId: string, name: string) {
+        await this.env.DB.update(schema.authPasskeys)
+            .set({ name })
+            .where(eq(schema.authPasskeys.credentialId, credentialId));
+        return { success: true };
+    }
+
+    /**
      * 删除凭证
      */
     async deleteCredential(credentialId: string) {

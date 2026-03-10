@@ -98,6 +98,18 @@ main {
     scrollbar-gutter: stable;
 }
 
+.is-loading {
+    margin-bottom: 20px;
+}
+
+.el-icon.is-loading {
+    color: var(--el-color-primary) !important;
+}
+
+div.is-loading {
+    color: var(--el-color-primary);
+}
+
 @media (max-width: 768px) {
     .main-content {
         overflow: visible !important;

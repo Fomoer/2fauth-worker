@@ -4,6 +4,7 @@ English | [中文](README.md)
 
 **High-security, lightweight Two-Factor Authentication (2FA/TOTP) management system supporting both Cloudflare Serverless and Docker private deployment.**
 
+
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?style=flat&logo=cloudflare)](https://workers.cloudflare.com/)
 [![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/r/nap0o/2fauth-worker)
 [![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-181717?style=flat&logo=github)](https://github.com/nap0o/2fauth-worker/actions)
@@ -35,7 +36,7 @@ Whether you're leveraging Cloudflare's free tier or deploying on your own NAS/mi
 
 ---
 
-## 📊 Feature Comparison: Why Choose 2FAuth Worker?
+## 📊 Product Feature Comparison
 
 | Feature | **2FAuth Worker** (This Project) | Google / MS Auth | Authy | 2FAS / Aegis | 1Password / Bitwarden |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -74,8 +75,8 @@ The most hassle-free way. No server required; Cloudflare hosts it for you for fr
   *   `ENCRYPTION_KEY`: A random key with at least 32 characters.
   *   `JWT_SECRET`: A random JWT secret with at least 32 characters.
   *   `OAUTH_ALLOWED_USERS`: your_email@example.com
-  *   `OAUTH_GITHUB_CLIENT_ID`: Your Client ID
-  *   `OAUTH_GITHUB_CLIENT_SECRET`: Your Client Secret
+  *   `OAUTH_GITHUB_CLIENT_ID`: Your CLIENT_ID
+  *   `OAUTH_GITHUB_CLIENT_SECRET`: Your CLIENT_SECRET
   *   `OAUTH_GITHUB_REDIRECT_URI`: Your Callback URL
 
 <details>
@@ -133,9 +134,18 @@ docker run -d --name 2fauth-worker \
 Choose this for continuous deployment or more precise database management.
 
 #### 1. Prerequisites
+
+*   Create a D1 database named `2fauth-db` in `Storage & Databases` -> `D1 SQL Database` and record its **Database ID**.
+<details>
+<summary>Click to view: Specific steps to create D1 SQL Database</summary>
+<img height="500" alt="image" src="https://github.com/user-attachments/assets/80824e1b-73f8-4d13-992c-a51dc4e53308" /><br />
+<img height="350" alt="image" src="https://github.com/user-attachments/assets/560c9977-2f89-4135-839d-bdf37208bfdc" /><br />
+<img height="350" alt="image" src="https://github.com/user-attachments/assets/25261345-8da6-40de-86b6-a23e910e737d" />
+</details>
+
 *   Obtain a **Cloudflare API Token** (requires `Edit Cloudflare Workers` permissions).
 <details>
-<summary>Click to view: Steps to obtain Cloudflare Worker Token</summary>
+<summary>Click to view: Steps to obtain Cloudflare Worker Deployment Token</summary>
 
 1. Log in to Cloudflare Dashboard
 2. [Go to API Tokens](https://dash.cloudflare.com/profile/api-tokens)
@@ -146,11 +156,8 @@ Choose this for continuous deployment or more precise database management.
 7. Copy the generated token
 
 <img width="500"  alt="image" src="https://github.com/user-attachments/assets/6487aa6e-e505-4980-aef4-e08172116746" /><br />
-
 <img width="800"  alt="image" src="https://github.com/user-attachments/assets/d4c737f7-2d9f-4cfb-a712-b1af416c8ef6" />
 </details>
-
-*   Create a D1 database named `2fauth-db` in `Storage & Databases` -> `D1` and record its **Database ID**.
 
 #### 2. Repository Configuration
 1.  **Fork** this repository.
@@ -163,9 +170,9 @@ Choose this for continuous deployment or more precise database management.
   *   `ENCRYPTION_KEY`: A 32+ character random key.
   *   `JWT_SECRET`: A 32+ character random JWT secret.
   *   `OAUTH_ALLOWED_USERS`: your_email@example.com
-  *   `OAUTH_GITHUB_CLIENT_ID`: your_id
-  *   `OAUTH_GITHUB_CLIENT_SECRET`: your_secret
-  *   `OAUTH_GITHUB_REDIRECT_URI`: your_callback_url
+  *   `OAUTH_GITHUB_CLIENT_ID`: Your ID
+  *   `OAUTH_GITHUB_CLIENT_SECRET`: Your Secret
+  *   `OAUTH_GITHUB_REDIRECT_URI`: Your Callback URL
 
 <details>
 <summary>Click to view: Secrets Configuration Example</summary>  
@@ -192,16 +199,17 @@ Regardless of the deployment method, these parameters are critical:
 | `JWT_SECRET` | Auth Token Secret | Requirement: 32+ characters. |
 | `OAUTH_ALLOWED_USERS` | **Whitelist**: Access Control | Emails or Telegram IDs, separated by commas. |
 
-### Variable Mapping for Different Providers:
+
+### Variable Mapping for Different Providers (Choose at least one):
 
 | Provider | Client ID Variable | Client Secret Variable | Redirect URI (Example: `https://xxx.dev/oauth/callback`) |
 | :--- | :--- | :--- | :--- |
 | **GitHub** | `OAUTH_GITHUB_CLIENT_ID` | `OAUTH_GITHUB_CLIENT_SECRET` | `OAUTH_GITHUB_REDIRECT_URI` |
 | **Telegram** | `OAUTH_TELEGRAM_BOT_NAME` | `OAUTH_TELEGRAM_BOT_TOKEN` | *Not required for Telegram* |
-| **Google** | `OAUTH_GOOGLE_CLIENT_ID` | `OAUTH_GOOGLE_CLIENT_SECRET" | `OAUTH_GOOGLE_REDIRECT_URI` |
+| **Google** | `OAUTH_GOOGLE_CLIENT_ID` | `OAUTH_GOOGLE_CLIENT_SECRET` | `OAUTH_GOOGLE_REDIRECT_URI` |
 | **Cloudflare Access** | `OAUTH_CLOUDFLARE_CLIENT_ID` | `OAUTH_CLOUDFLARE_CLIENT_SECRET` | `OAUTH_CLOUDFLARE_REDIRECT_URI` (requires `OAUTH_CLOUDFLARE_ORG_DOMAIN`) |
-| **Gitee** | `OAUTH_GITEE_CLIENT_ID` | `OAUTH_GITEE_CLIENT_SECRET" | `OAUTH_GITEE_REDIRECT_URI` |
-| **NodeLoc** | `OAUTH_NODELOC_CLIENT_ID` | `OAUTH_NODELOC_CLIENT_SECRET" | `OAUTH_NODELOC_REDIRECT_URI` |
+| **Gitee** | `OAUTH_GITEE_CLIENT_ID` | `OAUTH_GITEE_CLIENT_SECRET` | `OAUTH_GITEE_REDIRECT_URI` |
+| **NodeLoc** | `OAUTH_NODELOC_CLIENT_ID` | `OAUTH_NODELOC_CLIENT_SECRET` | `OAUTH_NODELOC_REDIRECT_URI` |
 
 ---
 
@@ -219,9 +227,11 @@ Regardless of the deployment method, these parameters are critical:
 1. Search and add **[@BotFather](https://t.me/BotFather)** on Telegram, following prompts to create a bot.
 2. Record the **Token** (`OAUTH_TELEGRAM_BOT_TOKEN`) and **Username** (`OAUTH_TELEGRAM_BOT_NAME`).
 3. You MUST send the `/setdomain` command to @BotFather, select your bot, and enter your **application domain** (without `https://`).
-4. Since this is a Serverless architecture, you need to manually register the Webhook. Replace `<Token>` and `<Domain>` in the link below and visit it once in your browser:
+4. Since this is a Serverless architecture, you need to manually register the Webhook.<br/>
+   Replace `<Token>` and `<Domain>` in the link below and visit it once in your browser:<br/>
    `https://api.telegram.org/bot<Token>/setWebhook?url=https://<Domain>/api/telegram/webhook`
-5. Fill `OAUTH_TELEGRAM_BOT_TOKEN`, `OAUTH_TELEGRAM_BOT_NAME` and `OAUTH_TELEGRAM_REDIRECT_URI` into environment variables.
+
+5. Fill `OAUTH_TELEGRAM_BOT_TOKEN`, `OAUTH_TELEGRAM_BOT_NAME` into environment variables.
 
 #### How to configure Cloudflare Access Login?
 1. Enter **Cloudflare Zero Trust Dashboard** -> **Access** -> **Applications**.
@@ -281,4 +291,3 @@ npm run dev
 
 ## 📄 License
 This project is open-sourced under the [GNU AGPL v3](LICENSE) license. Since this software involves 2FA security and network services, we maintain open-source fairness: if you run a modified version of this project on a server and provide services to the public, you must open your source code to the users.
-

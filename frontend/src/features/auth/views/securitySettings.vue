@@ -16,7 +16,7 @@
         <!-- 全局加载状态 -->
         <div v-if="loading && credentials.length === 0" class="flex-column flex-center min-h-200 text-secondary">
           <el-icon class="is-loading mb-20 text-primary" :size="48"><Loading /></el-icon>
-          <p class="text-16 ls-1">{{ $t('common.loading') }}</p>
+          <p class="text-16 ls-1">{{ $t('common.loading_data') }}</p>
         </div>
 
         <!-- 空状态 -->
@@ -29,8 +29,35 @@
             <el-table :data="credentials" style="width: 100%">
               <el-table-column :label="$t('security.credential_name')" min-width="150">
                 <template #default="{ row }">
-                  <div class="flex-align-center">
-                    <span>{{ row.name || $t('security.default_name') }}</span>
+                  <div class="flex-align-center" style="min-height: 32px;">
+                    <template v-if="editingId === row.id">
+                      <el-input 
+                        v-model="editName"
+                        size="small"
+                        @keyup.enter="saveEdit(row)"
+                        @keyup.esc="cancelEdit"
+                        @blur="cancelEdit"
+                        ref="editInputRef"
+                        style="width: 150px; margin-right: 8px;"
+                      />
+                      <el-button 
+                        type="success" 
+                        link 
+                        :icon="Check" 
+                        @mousedown.prevent
+                        @click="saveEdit(row)"
+                      />
+                    </template>
+                    <template v-else>
+                      <span>{{ row.name || $t('security.default_name') }}</span>
+                      <el-button 
+                        type="primary" 
+                        link 
+                        :icon="Edit" 
+                        @click="startEdit(row)"
+                        class="ml-2"
+                      />
+                    </template>
                   </div>
                 </template>
               </el-table-column>
@@ -89,8 +116,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Plus, Delete, Cpu, CircleCheck, Loading } from '@element-plus/icons-vue'
+import { ref, onMounted, nextTick } from 'vue'
+import { Plus, Delete, Cpu, CircleCheck, Loading, Edit, Check } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { webAuthnService } from '@/features/auth/service/webAuthnService'
@@ -103,6 +130,53 @@ const credentials = ref([])
 const addForm = ref({
   name: ''
 })
+
+const editingId = ref(null)
+const editName = ref('')
+const editInputRef = ref(null)
+
+const startEdit = (row) => {
+  editingId.value = row.id
+  editName.value = row.name || t('security.default_name')
+  nextTick(() => {
+    if (editInputRef.value) {
+      if (Array.isArray(editInputRef.value)) {
+        editInputRef.value[0]?.focus()
+      } else {
+        editInputRef.value.focus()
+      }
+    }
+  })
+}
+
+const cancelEdit = () => {
+  editingId.value = null
+  editName.value = ''
+}
+
+const saveEdit = async (row) => {
+  const newName = editName.value.trim()
+  if (!newName) {
+    ElMessage.error(t('common.name_required', '名称不能为空'))
+    return
+  }
+  
+  if (newName === row.name) {
+    cancelEdit()
+    return
+  }
+
+  try {
+    const res = await webAuthnService.updateCredentialName(row.id, newName)
+    if (res.success) {
+      ElMessage.success(t('common.success'))
+      cancelEdit()
+      await fetchCredentials()
+    }
+  } catch (error) {
+    console.error('Failed to update credential name:', error)
+  }
+}
 
 const fetchCredentials = async () => {
   loading.value = true

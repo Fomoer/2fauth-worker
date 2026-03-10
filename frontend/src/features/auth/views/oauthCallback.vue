@@ -8,7 +8,7 @@
         :sub-title="$t('auth.secure_login_sub', { provider: providerName })"
       >
         <template #extra>
-          <el-icon class="is-loading" :size="40" color="#409eff"><Loading /></el-icon>
+          <el-icon class="is-loading" :size="40"><Loading /></el-icon>
         </template>
       </el-result>
 

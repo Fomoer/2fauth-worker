@@ -24,15 +24,18 @@ FROM node:24-bookworm-slim AS runner
 WORKDIR /app
 
 # We only need backend/node_modules since we're running the backend server which serves static frontend files.
-COPY --from=builder /app/backend/node_modules ./backend/node_modules
+COPY --from=builder --chown=node:node /app/backend/node_modules ./backend/node_modules
 
 # Copy dist files
-COPY --from=builder /app/frontend/dist ./frontend/dist
-COPY --from=builder /app/backend/dist ./backend/dist
-COPY --from=builder /app/backend/schema.sql ./
+COPY --from=builder --chown=node:node /app/frontend/dist ./frontend/dist
+COPY --from=builder --chown=node:node /app/backend/dist ./backend/dist
+COPY --from=builder --chown=node:node /app/backend/schema.sql ./
 
 ENV NODE_ENV=production
 ENV PORT=3000
+
+# Use non-root user
+USER node
 
 # Expose the default port
 EXPOSE 3000

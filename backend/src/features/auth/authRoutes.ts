@@ -216,4 +216,17 @@ auth.delete('/webauthn/credentials/:id', authMiddleware, async (c) => {
     return c.json(result);
 });
 
+// 7. 更新凭证 (需已登录)
+auth.put('/webauthn/credentials/:id', authMiddleware, async (c) => {
+    const credentialId = c.req.param('id');
+    const body = await c.req.json();
+    const { name } = body;
+    if (!name) {
+        throw new AppError('credential_name_required', 400);
+    }
+    const service = getWebAuthnService(c);
+    const result = await service.updateCredentialName(credentialId, name);
+    return c.json(result);
+});
+
 export default auth;

@@ -73,7 +73,7 @@ onBeforeUnmount(() => {
     <!-- 全局初始加载白屏遮罩 (主要用于 /login 和 /health 等外部页面隐藏身份验证时的跳转闪烁) -->
     <div v-show="isAppLoading && route.path !== '/'" class="global-app-shell">
       <div class="shell-content">
-        <el-icon class="is-loading shell-spinner" :size="48" color="#409eff"><Loading /></el-icon>
+        <el-icon class="is-loading shell-spinner" :size="48"><Loading /></el-icon>
       </div>
     </div>
 

@@ -16,7 +16,7 @@ export function createAsyncComponent(loader) {
                 }, [
                     h('div', {
                         class: 'is-loading',
-                        style: 'color: var(--el-color-primary); font-size: 24px;'
+                        style: 'font-size: 24px;'
                     }, 'Loading...')
                 ])
             }
