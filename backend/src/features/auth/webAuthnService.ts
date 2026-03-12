@@ -15,11 +15,17 @@ export class WebAuthnService {
     private rpID: string;
     private origin: string;
 
-    constructor(env: EnvBindings, url: string) {
+    constructor(env: EnvBindings, url: string, headers?: Record<string, string | undefined>) {
         this.env = env;
         const parsedUrl = new URL(url);
-        this.rpID = parsedUrl.hostname;
-        this.origin = `${parsedUrl.protocol}//${parsedUrl.host}`;
+
+        // Handle Reverse Proxy (Docker/Nginx/Cloudflare)
+        // If X-Forwarded-Proto exists, use it as the real protocol
+        const proto = headers?.['x-forwarded-proto'] || parsedUrl.protocol.replace(':', '');
+        const host = headers?.['x-forwarded-host'] || parsedUrl.host;
+
+        this.rpID = host.split(':')[0]; // Domain only for RP ID
+        this.origin = `${proto.includes('://') ? proto : proto + '://'}${host}`;
     }
 
     /**

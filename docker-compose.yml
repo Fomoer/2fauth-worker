@@ -25,12 +25,12 @@ services:
       # Google 登录配置
       # - OAUTH_GOOGLE_CLIENT_ID=
       # - OAUTH_GOOGLE_CLIENT_SECRET=
-      # - OAUTH_GOOGLE_REDIRECT_URI=https://<your_domain>/api/oauth/callback
+      # - OAUTH_GOOGLE_REDIRECT_URI=https://<your_domain>/oauth/callback
 
       # Github 登录配置
       # - OAUTH_GITHUB_CLIENT_ID=
       # - OAUTH_GITHUB_CLIENT_SECRET=
-      # - OAUTH_GITHUB_REDIRECT_URI=https://<your_domain>/api/oauth/callback
+      # - OAUTH_GITHUB_REDIRECT_URI=https://<your_domain>/oauth/callback
 
       # Telegram 登录配置
       # - OAUTH_TELEGRAM_BOT_NAME=your_bot_name
@@ -50,4 +50,4 @@ services:
       # Nodeloc 登录配置
       # - OAUTH_NODELOC_CLIENT_ID=
       # - OAUTH_NODELOC_CLIENT_SECRET=
-      # - OAUTH_NODELOC_REDIRECT_URI=https://<your_domain>/api/oauth/callback
+      # - OAUTH_NODELOC_REDIRECT_URI=https://<your_domain>/oauth/callback

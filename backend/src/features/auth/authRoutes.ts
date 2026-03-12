@@ -9,7 +9,7 @@ import { WebAuthnService } from '@/features/auth/webAuthnService';
 const auth = new Hono<{ Bindings: EnvBindings, Variables: { user: any } }>();
 
 const getService = (c: any) => new AuthService(c.env);
-const getWebAuthnService = (c: any) => new WebAuthnService(c.env, c.req.url);
+const getWebAuthnService = (c: any) => new WebAuthnService(c.env, c.req.url, c.req.header());
 
 // 获取可用登录方式列表
 auth.get('/providers', (c) => {

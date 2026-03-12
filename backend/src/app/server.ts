@@ -18,14 +18,46 @@ const dataDir = path.resolve(baseDir, 'data');
 console.log(`[Docker Server] Base directory: ${baseDir}`);
 console.log(`[Docker Server] Frontend dist path: ${frontendDistPath}`);
 
-// 2. Ensure data directory exists
+// 2. Ensure data directory exists and is writable
 if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
 }
 
+try {
+    fs.accessSync(dataDir, fs.constants.W_OK);
+} catch (err) {
+    console.error(`\n❌ ERROR: Data directory "${dataDir}" is NOT writable!`);
+    console.error(`   Please run on your host: sudo chown -R 1000:1000 ./data\n`);
+    process.exit(1);
+}
+
 // 3. Initialize local SQLite Database
 const dbFile = process.env.SQLITE_DB_PATH || path.join(dataDir, '2fauth.db');
-const sqlite = new Database(dbFile);
+
+// Check if database file is writable if it exists
+if (fs.existsSync(dbFile)) {
+    try {
+        fs.accessSync(dbFile, fs.constants.W_OK);
+    } catch (err) {
+        console.error(`\n❌ ERROR: Database file "${dbFile}" is NOT writable!`);
+        console.error(`   Please run on your host: sudo chown 1000:1000 ${dbFile}\n`);
+        process.exit(1);
+    }
+}
+
+let sqlite: Database.Database;
+try {
+    sqlite = new Database(dbFile);
+} catch (err: any) {
+    if (err.code === 'SQLITE_CANTOPEN') {
+        console.error(`\n❌ ERROR: SQLite cannot open database file "${dbFile}".`);
+        console.error(`   This is likely a permission issue on the mounted volume.`);
+        console.error(`   Please run on your host: sudo chown -R 1000:1000 ./data\n`);
+    } else {
+        console.error(`\n❌ ERROR: Failed to open database:`, err.message);
+    }
+    process.exit(1);
+}
 sqlite.pragma('journal_mode = WAL');
 
 // 4. Initialize Drizzle ORM

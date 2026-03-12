@@ -93,8 +93,17 @@ The most hassle-free way. No server required; Cloudflare hosts it for you for fr
 
 If you want absolute control over your data or need to run it in a local network.
 
+**⚠️ Important Security Notice**: To provide the highest level of security, this image runs strictly as a **non-privileged user (node, UID 1000)** to prevent container escape risks. 
+You **MUST** create the data directory and set the correct permissions on your host machine before starting the container, otherwise you will encounter `Permission Denied` errors.
+
+#### 0. Prepare Data Directory (Required)
+```bash
+mkdir -p data && sudo chown -R 1000:1000 data
+```
+
 #### 1. Using Docker Compose (Recommended)
-Create `docker-compose.yml` on your server:
+
+1. Create `docker-compose.yml` on your server:
 ```yaml
 services:
   2fauth:
@@ -105,16 +114,17 @@ services:
     volumes:
       - ./data:/app/data
     environment:
+      # Core Secrets
       - ENCRYPTION_KEY=Your_32_Character_Random_Key
-      - JWT_SECRET=Your_Random_JWT_Secret
+      - JWT_SECRET=Your_32_Character_Random_JWT_Secret
       - OAUTH_ALLOWED_USERS=your_email@example.com
       # Configure at least one provider (GitHub example)
       - OAUTH_GITHUB_CLIENT_ID=your_id
       - OAUTH_GITHUB_CLIENT_SECRET=your_secret
-      - OAUTH_GITHUB_REDIRECT_URI=https://your-domain.com/oauth/callback
+      - OAUTH_GITHUB_REDIRECT_URI=[https://your-domain.com/oauth/callback](https://your-domain.com/oauth/callback)
     restart: unless-stopped
 ```
-Run `docker compose up -d`.
+2. Run `docker compose up -d`.
 
 #### 2. Using Docker Run
 ```bash
@@ -126,8 +136,8 @@ docker run -d --name 2fauth-worker \
   -e OAUTH_ALLOWED_USERS=your_email@example.com \
   -e OAUTH_GITHUB_CLIENT_ID= \
   -e OAUTH_GITHUB_CLIENT_SECRET= \
-  -e OAUTH_GITHUB_CLIENT_REDIRECT_URI= \
-  nap0o/2fauth-worker:latest 
+  -e OAUTH_GITHUB_REDIRECT_URI=[https://your-domain.com/oauth/callback](https://your-domain.com/oauth/callback) \
+  nap0o/2fauth-worker:latest
 ```
 
 ---

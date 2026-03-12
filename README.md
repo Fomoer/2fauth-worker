@@ -91,8 +91,18 @@
 
 如果你想把数据完全掌控在自己手里，或者需要在内网环境运行。
 
+**⚠️ 核心安全须知**：为了提供最高级别的安全保障，本项目的 Docker 镜像严格遵循**非特权用户（Rootless）**运行标准（内部以 `node` 用户，UID 1000 运行），从而有效防止潜在的容器逃逸风险。
+在运行容器前，你**必须**预先在宿主机创建目录并分配正确的权限，否则会出现 `Permission Denied` 报错。
+
+#### 0. 准备数据目录 (必做)
+在你想运行容器的目录下，执行以下命令：
+```bash
+mkdir -p data && sudo chown -R 1000:1000 data
+```
+
 #### 1. 使用 Docker Compose (推荐)
-在你的服务器上创建 `docker-compose.yml`：
+
+1. 在服务器上创建 `docker-compose.yml`：
 ```yaml
 services:
   2fauth:
@@ -103,6 +113,7 @@ services:
     volumes:
       - ./data:/app/data
     environment:
+      # 核心密钥
       - ENCRYPTION_KEY=32位以上随机密钥
       - JWT_SECRET=32位以上随机JWT密钥
       - OAUTH_ALLOWED_USERS=你的邮箱@example.com
@@ -112,7 +123,7 @@ services:
       - OAUTH_GITHUB_REDIRECT_URI=https://你的域名/oauth/callback
     restart: unless-stopped
 ```
-运行 `docker compose up -d` 即可。
+2. 运行 `docker compose up -d` 即可。
 
 #### 2. 使用 Docker Run
 ```bash
@@ -124,8 +135,8 @@ docker run -d --name 2fauth-worker \
   -e OAUTH_ALLOWED_USERS=你的邮箱 \
   -e OAUTH_GITHUB_CLIENT_ID= \
   -e OAUTH_GITHUB_CLIENT_SECRET= \
-  -e OAUTH_GITHUB_CLIENT_REDIRECT_URI= \
-  nap0o/2fauth-worker:latest 
+  -e OAUTH_GITHUB_REDIRECT_URI=https://你的域名/oauth/callback \
+  nap0o/2fauth-worker:latest
 ```
 
 ---
