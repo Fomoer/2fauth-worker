@@ -36,7 +36,8 @@ Whether you're leveraging Cloudflare's free tier or deploying on your own NAS/mi
 
 ---
 
-## 📊 Product Feature Comparison
+<details>
+<summary>Click to view: Product Feature Comparison</summary>
 
 | Feature | **2FAuth Worker** (This Project) | Google / MS Auth | Authy | 2FAS / Aegis | 1Password / Bitwarden |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -49,6 +50,8 @@ Whether you're leveraging Cloudflare's free tier or deploying on your own NAS/mi
 | Vendor Risk | ✅ Source in Hand | ⚠️ Forced migration risks | 🚨 Feature shutdowns (PC) | ✅ Open-source control | ⚠️ Subscription/Closed |
 
 > 🎯 **Summary**: **2FAuth Worker** combines the multi-device convenience of 1Password with the privacy of open-source apps, and the zero cost of Serverless. **Automatic Telegram backup** completely eliminates "data loss anxiety" common in both web and mobile apps, making security truly accessible.
+
+</details>
 
 ---
 

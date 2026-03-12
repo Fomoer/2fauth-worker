@@ -34,9 +34,8 @@
 ### 📦 丢不了的“后悔药” (Multi-channel Backup)
 *   支持 WebDAV、S3 云存储或 Telegram 机器人自动备份。即使手机丢了、系统重装了，甚至 Cloudflare 账号没了，你也能通过备份瞬间找回所有账号。
 
----
-
-## 📊 同类型产品功能对比
+<details>
+<summary>点击查看：同类型产品对比</summary>
 
 | 功能特性 | **2FAuth Worker** (本项目) | Google / MS Auth | Authy | 2FAS / Aegis | 1Password / Bitwarden |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -49,6 +48,8 @@
 | 厂商倒闭风险 | ✅ 源码在手，永不丧失 | ⚠️ 生态强制迁移风险 | 🚨 随时下线(如 PC 端) | ✅ 开源可控 | ⚠️ 订阅制/闭源风险 |
 
 > 🎯 **小结**：**2FAuth Worker** 既有 1Password 的多端便利，又有开源 App 的隐私性，更有 Serverless 的零成本。**支持 Telegram 机器人自动备份**更是解决了所有 Web 端和 App 端的“丢数据焦虑”，让安全触手可得。
+
+</details>
 
 ---
 
