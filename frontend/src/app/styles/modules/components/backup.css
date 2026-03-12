@@ -220,3 +220,25 @@
 .dark .btn-microsoft-auth:hover {
     background-color: #333333;
 }
+
+.btn-baidu-auth {
+    background-color: #ffffff;
+    border: 1px solid #2932E1;
+    color: #2932E1;
+}
+
+.btn-baidu-auth:hover {
+    background-color: #f0f2ff;
+    border-color: #2932E1;
+    box-shadow: 0 1px 3px 0 rgba(41, 50, 225, 0.30), 0 4px 8px 3px rgba(41, 50, 225, 0.15);
+}
+
+.dark .btn-baidu-auth {
+    background-color: #1a1e3a;
+    border-color: #2932E1;
+    color: #ffffff;
+}
+
+.dark .btn-baidu-auth:hover {
+    background-color: #222850;
+}

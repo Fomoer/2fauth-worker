@@ -23,14 +23,15 @@ export function useBackupProviders() {
     const isEditingWebdavPwd = ref(false)
     const isEditingS3Secret = ref(false)
     const isEditingTelegramToken = ref(false)
-    const isEditingGoogleDrive = ref(false)
-    const isEditingOneDrive = ref(false)
     const isAuthenticatingGoogle = ref(false)
     const isAuthenticatingMicrosoft = ref(false)
-    const authStatus = ref(null) // null, 'success', 'error'
+    const isAuthenticatingBaidu = ref(false)
+    const authStatusGoogle = ref(null) // null, 'success', 'error'
     const authStatusMicrosoft = ref(null)
-    const authErrorMessage = ref('')
+    const authStatusBaidu = ref(null)
+    const authErrorMessageGoogle = ref('')
     const authErrorMessageMicrosoft = ref('')
+    const authErrorMessageBaidu = ref('')
 
     const initialFormState = () => ({
         type: 's3',
@@ -43,8 +44,8 @@ export function useBackupProviders() {
 
     const form = ref(initialFormState())
     const currentProviderId = ref(null)
-    const hasExistingAutoPwd = ref(false)
-    const configUseExistingAutoPwd = ref(false)
+    const isAutoBackupPasswordSaved = ref(false)
+    const shouldUseExistingAutoBackupPassword = ref(false)
 
     // Methods
     const fetchProviders = async () => {
@@ -72,11 +73,9 @@ export function useBackupProviders() {
         isEditingWebdavPwd.value = false
         isEditingS3Secret.value = false
         isEditingTelegramToken.value = false
-        isEditingGoogleDrive.value = false
-        isEditingOneDrive.value = false
         form.value = initialFormState()
-        hasExistingAutoPwd.value = false
-        configUseExistingAutoPwd.value = false
+        isAutoBackupPasswordSaved.value = false
+        shouldUseExistingAutoBackupPassword.value = false
         showConfigDialog.value = true
     }
 
@@ -85,8 +84,6 @@ export function useBackupProviders() {
         isEditingWebdavPwd.value = false
         isEditingS3Secret.value = false
         isEditingTelegramToken.value = false
-        isEditingGoogleDrive.value = false
-        isEditingOneDrive.value = false
         currentProviderId.value = provider.id
         form.value = JSON.parse(JSON.stringify({
             type: provider.type,
@@ -96,34 +93,36 @@ export function useBackupProviders() {
             autoBackupPassword: '',
             autoBackupRetain: provider.auto_backup_retain ?? 30
         }))
-        hasExistingAutoPwd.value = !!provider.auto_backup_password
-        configUseExistingAutoPwd.value = true
+        isAutoBackupPasswordSaved.value = !!provider.auto_backup_password
+        shouldUseExistingAutoBackupPassword.value = true
         showConfigDialog.value = true
     }
 
     const validateForm = () => {
         if (!form.value.name) return t('backup.require_name')
-        const c = form.value.config
+        const config = form.value.config
         if (form.value.type === 'webdav') {
-            if (!c.url) return t('backup.require_webdav_url')
-            if (!c.username) return t('backup.require_username')
-            if (!c.password) return t('backup.require_password')
+            if (!config.url) return t('backup.require_webdav_url')
+            if (!config.username) return t('backup.require_username')
+            if (!config.password) return t('backup.require_password')
         } else if (form.value.type === 's3') {
-            if (!c.endpoint) return t('backup.require_endpoint')
-            if (!c.bucket) return t('backup.require_bucket')
-            if (!c.accessKeyId) return t('backup.require_access_key')
-            if (!c.secretAccessKey) return t('backup.require_secret_key')
+            if (!config.endpoint) return t('backup.require_endpoint')
+            if (!config.bucket) return t('backup.require_bucket')
+            if (!config.accessKeyId) return t('backup.require_access_key')
+            if (!config.secretAccessKey) return t('backup.require_secret_key')
         } else if (form.value.type === 'telegram') {
-            if (!c.botToken) return t('backup.require_telegram_token')
-            if (!c.chatId) return t('backup.require_telegram_chat_id')
+            if (!config.botToken) return t('backup.require_telegram_token')
+            if (!config.chatId) return t('backup.require_telegram_chat_id')
         } else if (form.value.type === 'gdrive') {
-            if (!c.refreshToken) return t('backup.require_google_auth')
+            if (!config.refreshToken) return t('backup.require_google_auth')
         } else if (form.value.type === 'onedrive') {
-            if (!c.refreshToken) return t('backup.require_microsoft_auth')
+            if (!config.refreshToken) return t('backup.require_microsoft_auth')
+        } else if (form.value.type === 'baidu') {
+            if (!config.refreshToken) return t('backup.require_baidu_auth')
         }
 
         if (form.value.autoBackup) {
-            if (isEditing.value && hasExistingAutoPwd.value && configUseExistingAutoPwd.value) {
+            if (isEditing.value && isAutoBackupPasswordSaved.value && shouldUseExistingAutoBackupPassword.value) {
                 return null
             }
             if (!form.value.autoBackupPassword || form.value.autoBackupPassword.length < 12) {
@@ -139,10 +138,12 @@ export function useBackupProviders() {
 
         isTesting.value = true;
         // Reset old error states before starting a new test to ensure UI reflects current result
-        authStatus.value = null;
-        authErrorMessage.value = '';
+        authStatusGoogle.value = null;
+        authErrorMessageGoogle.value = '';
         authStatusMicrosoft.value = null;
         authErrorMessageMicrosoft.value = '';
+        authStatusBaidu.value = null;
+        authErrorMessageBaidu.value = '';
 
         try {
             const res = await backupService.testConnection(
@@ -166,11 +167,14 @@ export function useBackupProviders() {
 
                 // Switch UI back to authentication state
                 if (type === 'gdrive') {
-                    authStatus.value = 'error';
-                    authErrorMessage.value = t('backup.token_expired_or_revoked');
+                    authStatusGoogle.value = 'error';
+                    authErrorMessageGoogle.value = t('backup.token_expired_or_revoked');
                 } else if (type === 'onedrive') {
                     authStatusMicrosoft.value = 'error';
                     authErrorMessageMicrosoft.value = t('backup.token_expired_or_revoked');
+                } else if (type === 'baidu') {
+                    authStatusBaidu.value = 'error';
+                    authErrorMessageBaidu.value = t('backup.token_expired_or_revoked');
                 }
 
                 // If we are editing an existing provider, update the global store to reflect the state
@@ -187,7 +191,7 @@ export function useBackupProviders() {
         const error = validateForm()
         if (error) return ElMessage.warning(error)
 
-        if (isEditing.value && hasExistingAutoPwd.value && configUseExistingAutoPwd.value) {
+        if (isEditing.value && isAutoBackupPasswordSaved.value && shouldUseExistingAutoBackupPassword.value) {
             form.value.autoBackupPassword = ''
         }
 
@@ -218,8 +222,8 @@ export function useBackupProviders() {
 
     const startGoogleAuth = async () => {
         isAuthenticatingGoogle.value = true
-        authStatus.value = null
-        authErrorMessage.value = ''
+        authStatusGoogle.value = null
+        authErrorMessageGoogle.value = ''
         try {
             const res = await backupService.getGoogleAuthUrl()
             if (res.success && res.authUrl) {
@@ -234,7 +238,7 @@ export function useBackupProviders() {
                         if (authWindow && authWindow.closed) {
                             clearInterval(timer)
                             // 若窗口关闭且仍未成功，重置加载状态
-                            if (isAuthenticatingGoogle.value && !authStatus.value) {
+                            if (isAuthenticatingGoogle.value && !authStatusGoogle.value) {
                                 isAuthenticatingGoogle.value = false
                             }
                         }
@@ -280,21 +284,50 @@ export function useBackupProviders() {
         }
     }
 
+    const startBaiduAuth = async () => {
+        isAuthenticatingBaidu.value = true
+        authStatusBaidu.value = null
+        authErrorMessageBaidu.value = ''
+        try {
+            const res = await backupService.getBaiduAuthUrl()
+            if (res.success && res.authUrl) {
+                const name = 'baidu_auth'
+                const specs = 'width=600,height=700,left=200,top=100'
+                const authWindow = window.open(res.authUrl, name, specs)
+
+                const timer = setInterval(() => {
+                    try {
+                        if (authWindow && authWindow.closed) {
+                            clearInterval(timer)
+                            if (isAuthenticatingBaidu.value && !authStatusBaidu.value) {
+                                isAuthenticatingBaidu.value = false
+                            }
+                        }
+                    } catch (e) { }
+                }, 1000)
+            } else {
+                isAuthenticatingBaidu.value = false
+            }
+        } catch (e) {
+            isAuthenticatingBaidu.value = false
+        }
+    }
+
     const handleAuthMessage = async (event) => {
         const data = event instanceof MessageEvent ? event.data : event
         if (!data || !data.type) return
 
         if (data.type === 'GDRIVE_AUTH_SUCCESS') {
             isAuthenticatingGoogle.value = false
-            authStatus.value = 'success'
+            authStatusGoogle.value = 'success'
             form.value.config.refreshToken = data.refreshToken
             if (!form.value.config.saveDir) {
                 form.value.config.saveDir = '/2fauth-worker-backup'
             }
         } else if (data.type === 'GDRIVE_AUTH_ERROR') {
             isAuthenticatingGoogle.value = false
-            authStatus.value = 'error'
-            authErrorMessage.value = data.message || t('backup.google_auth_failed')
+            authStatusGoogle.value = 'error'
+            authErrorMessageGoogle.value = data.message || t('backup.google_auth_failed')
         } else if (data.type === 'MS_AUTH_SUCCESS') {
             isAuthenticatingMicrosoft.value = false
             authStatusMicrosoft.value = 'success'
@@ -306,6 +339,17 @@ export function useBackupProviders() {
             isAuthenticatingMicrosoft.value = false
             authStatusMicrosoft.value = 'error'
             authErrorMessageMicrosoft.value = data.message || t('backup.microsoft_auth_failed')
+        } else if (data.type === 'BAIDU_AUTH_SUCCESS') {
+            isAuthenticatingBaidu.value = false
+            authStatusBaidu.value = 'success'
+            form.value.config.refreshToken = data.refreshToken
+            if (!form.value.config.saveDir) {
+                form.value.config.saveDir = '/apps/2fauth-backup'
+            }
+        } else if (data.type === 'BAIDU_AUTH_ERROR') {
+            isAuthenticatingBaidu.value = false
+            authStatusBaidu.value = 'error'
+            authErrorMessageBaidu.value = data.message || t('backup.baidu_auth_failed')
         }
     }
 
@@ -324,16 +368,20 @@ export function useBackupProviders() {
         window.addEventListener('message', handleMsg)
 
         // 2. Listen via BroadcastChannel (More robust)
-        const bc = new BroadcastChannel('gdrive_oauth_channel')
-        bc.onmessage = handleMsg
+        const bcGDrive = new BroadcastChannel('gdrive_oauth_channel')
+        bcGDrive.onmessage = handleMsg
 
         const bcMs = new BroadcastChannel('ms_oauth_channel')
         bcMs.onmessage = handleMsg
 
+        const bcBaidu = new BroadcastChannel('baidu_oauth_channel')
+        bcBaidu.onmessage = handleMsg
+
         return () => {
             window.removeEventListener('message', handleMsg)
-            bc.close()
+            bcGDrive.close()
             bcMs.close()
+            bcBaidu.close()
         }
     }
 
@@ -349,17 +397,18 @@ export function useBackupProviders() {
         isEditingWebdavPwd,
         isEditingS3Secret,
         isEditingTelegramToken,
-        isEditingGoogleDrive,
-        isEditingOneDrive,
         isAuthenticatingGoogle,
         isAuthenticatingMicrosoft,
-        authStatus,
+        isAuthenticatingBaidu,
+        authStatusGoogle,
         authStatusMicrosoft,
-        authErrorMessage,
+        authStatusBaidu,
+        authErrorMessageGoogle,
         authErrorMessageMicrosoft,
+        authErrorMessageBaidu,
         form,
-        hasExistingAutoPwd,
-        configUseExistingAutoPwd,
+        isAutoBackupPasswordSaved,
+        shouldUseExistingAutoBackupPassword,
         fetchProviders,
         openAddDialog,
         editProvider,
@@ -368,6 +417,7 @@ export function useBackupProviders() {
         deleteProvider,
         startGoogleAuth,
         startMicrosoftAuth,
+        startBaiduAuth,
         handleAuthMessage,
         setupAuthListener,
         availableTypes

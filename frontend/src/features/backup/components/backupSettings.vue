@@ -75,10 +75,11 @@
         <el-form-item :label="$t('backup.type_label')">
           <el-select v-model="form.type" :disabled="isEditing">
             <el-option v-if="availableTypes.includes('s3')" :label="$t('backup.type_s3')" value="s3" />
-            <el-option v-if="availableTypes.includes('telegram')" label="Telegram" value="telegram" />
-            <el-option v-if="availableTypes.includes('webdav')" label="WebDAV" value="webdav" />
-            <el-option v-if="availableTypes.includes('gdrive')" label="Google Drive" value="gdrive" />
-            <el-option v-if="availableTypes.includes('onedrive')" label="OneDrive" value="onedrive" />
+            <el-option v-if="availableTypes.includes('telegram')" :label="$t('backup.type_telegram')" value="telegram" />
+            <el-option v-if="availableTypes.includes('webdav')" :label="$t('backup.type_webdav')" value="webdav" />
+            <el-option v-if="availableTypes.includes('gdrive')" :label="$t('backup.type_gdrive')" value="gdrive" />
+            <el-option v-if="availableTypes.includes('onedrive')" :label="$t('backup.type_onedrive')" value="onedrive" />
+            <el-option v-if="availableTypes.includes('baidu')" :label="$t('backup.type_baidu')" value="baidu" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('backup.name_label')">
@@ -155,7 +156,7 @@
           <!-- 1. 授权引导/状态区域 (仅在表单中没有 Token 或 正在授权 或 授权成功但未保存时显示) -->
           <div v-if="!form.config.refreshToken" class="p-10 mb-20 text-center bg-fill rounded-8 border-1 border-dashed min-h-120 flex flex-center flex-column">
              <!-- 初始/加载状态 -->
-             <template v-if="!authStatus">
+             <template v-if="!authStatusGoogle">
                <p class="mb-15 text-secondary text-13">{{ $t('backup.gdrive_auth_tip') }}</p>
                <button 
                  type="button" 
@@ -165,23 +166,23 @@
                  @click="startGoogleAuth"
                >
                  <el-icon v-if="isAuthenticatingGoogle" class="is-loading"><Loading /></el-icon>
-                 <component v-else :is="iconGoogle" width="20" height="20" />
+                 <component v-else :is="iconGoogleDrive" width="20" height="20" />
                  <span>{{ isAuthenticatingGoogle ? $t('backup.waiting_authorization') : $t('backup.auth_with_google') }}</span>
                </button>
              </template>
 
              <!-- 授权失败反馈 -->
-             <template v-else-if="authStatus === 'error'">
+             <template v-else-if="authStatusGoogle === 'error'">
                 <div class="text-danger flex flex-items-center flex-column py-10">
                   <el-icon size="42"><CircleClose /></el-icon>
-                  <p class="mt-15 font-bold">{{ authErrorMessage }}</p>
+                  <p class="mt-15 font-bold">{{ authErrorMessageGoogle }}</p>
                   <el-button type="primary" link class="mt-10" @click="startGoogleAuth">{{ $t('backup.re_authorize') }}</el-button>
                 </div>
              </template>
           </div>
 
           <!-- 2. 已授权标识 (仅在新增模式下授权成功后显示) -->
-          <el-form-item v-if="!isEditing && authStatus === 'success'" class="animate-fade-in">
+          <el-form-item v-if="!isEditing && authStatusGoogle === 'success'" class="animate-fade-in">
             <div class="backup-status-box is-success">
               <div class="backup-status-content">
                 <el-icon class="status-icon"><CircleCheck /></el-icon>
@@ -226,7 +227,7 @@
                  @click="startMicrosoftAuth"
                >
                  <el-icon v-if="isAuthenticatingMicrosoft" class="is-loading"><Loading /></el-icon>
-                 <component v-else :is="iconMicrosoftAuth" width="20" height="20" />
+                 <component v-else :is="iconOnedrive" width="20" height="20" />
                  <span>{{ isAuthenticatingMicrosoft ? $t('backup.waiting_authorization') : $t('backup.auth_with_microsoft') }}</span>
                </button>
              </template>
@@ -271,29 +272,87 @@
             </el-form-item>
           </div>
         </template>
+        <!-- Baidu Netdisk 配置 -->
+        <template v-if="form.type === 'baidu'">
+            <!-- 1. 授权引导/状态区域 -->
+            <div v-if="!form.config.refreshToken" class="p-10 mb-20 text-center bg-fill rounded-8 border-1 border-dashed min-h-120 flex flex-center flex-column">
+              <template v-if="!authStatusBaidu">
+                <p class="mb-15 text-secondary text-13">{{ $t('backup.baidu_auth_tip') }}</p>
+                <button 
+                  type="button" 
+                  class="btn-oauth-auth btn-baidu-auth pointer" 
+                  :class="{ 'is-loading': isAuthenticatingBaidu }"
+                  :disabled="isAuthenticatingBaidu"
+                  @click="startBaiduAuth"
+                >
+                  <el-icon v-if="isAuthenticatingBaidu" class="is-loading"><Loading /></el-icon>
+                  <component v-else :is="iconBaiduNetdisk" width="20" height="20" />
+                  <span>{{ isAuthenticatingBaidu ? $t('backup.waiting_authorization') : $t('backup.auth_with_baidu') }}</span>
+                </button>
+              </template>
+              <template v-else-if="authStatusBaidu === 'error'">
+                  <div class="text-danger flex flex-items-center flex-column py-10">
+                    <el-icon size="42"><CircleClose /></el-icon>
+                    <p class="mt-15 font-bold">{{ authErrorMessageBaidu }}</p>
+                    <el-button type="primary" link class="mt-10" @click="startBaiduAuth">{{ $t('backup.re_authorize') }}</el-button>
+                  </div>
+              </template>
+            </div>
+
+            <!-- 2. 已授权标识 -->
+            <el-form-item v-if="!isEditing && authStatusBaidu === 'success'" class="animate-fade-in">
+              <div class="backup-status-box is-success">
+                <div class="backup-status-content">
+                  <el-icon class="status-icon"><CircleCheck /></el-icon>
+                  <span class="status-text">{{ $t('backup.authorized_success_baidu') }}</span>
+                </div>
+                <el-button type="primary" link @click="startBaiduAuth">{{ $t('backup.re_authorize') }}</el-button>
+              </div>
+            </el-form-item>
+
+            <!-- 3. 配置项区域 -->
+            <div v-if="form.config.refreshToken">
+              <el-form-item :label="$t('backup.save_dir')">
+                <el-input v-model="form.config.saveDir" :placeholder="$t('backup.save_dir_placeholder')" />
+                <div class="backup-form-tip">{{ $t('backup.baidu_folder_tip') }}</div>
+              </el-form-item>
+              <el-form-item v-if="isEditing" :label="$t('backup.baidu_refresh_token')">
+                <div class="backup-status-box">
+                  <div class="backup-status-content">
+                    <el-icon class="status-icon" color="var(--el-text-color-secondary)"><CircleCheck /></el-icon>
+                    <span class="status-text text-secondary">{{ $t('backup.baidu_token_active') }}</span>
+                  </div>
+                  <el-button type="primary" link @click="startBaiduAuth">{{ $t('backup.re_authorize') }}</el-button>
+                </div>
+              </el-form-item>
+            </div>
+        </template>
 
         <el-divider content-position="left">{{ $t('backup.auto_backup_config') }}</el-divider>
         <el-form-item :label="$t('backup.auto_backup')">
           <el-switch v-model="form.autoBackup" :active-text="$t('backup.switch_on')" :inactive-text="$t('backup.switch_off')" />
         </el-form-item>
-        <el-form-item :label="$t('backup.encrypt_password')" v-if="form.autoBackup">
-          <div v-if="isEditing && hasExistingAutoPwd" style="margin-bottom: 15px; width: 100%;">
-            <el-radio-group v-model="configUseExistingAutoPwd">
-              <el-radio :value="true">{{ $t('backup.keep_old_pwd') }}</el-radio>
-              <el-radio :value="false">{{ $t('backup.set_new_pwd') }}</el-radio>
-            </el-radio-group>
-          </div>
-          <div v-if="!(isEditing && hasExistingAutoPwd && configUseExistingAutoPwd)" class="w-full">
-            <el-input v-model="form.autoBackupPassword" type="password" show-password :placeholder="$t('backup.input_encrypt_pwd')" />
-            <div class="backup-form-tip"><span class="text-danger">*</span> {{ $t('backup.password_length_req') }}</div>
-          </div>
-          <div v-else class="backup-status-box is-success mb-10">
-            <div class="backup-status-content">
-               <el-icon class="status-icon"><CircleCheck /></el-icon>
-               <span class="status-text">{{ $t('backup.continue_use_old_pwd') }}</span>
+        <template v-if="form.autoBackup">
+          <el-form-item :label="$t('backup.encrypt_password')">
+            <template v-if="isEditing && isAutoBackupPasswordSaved">
+                <el-radio-group v-model="shouldUseExistingAutoBackupPassword" class="mb-10">
+                  <el-radio :label="true">{{ $t('backup.keep_old_pwd') }}</el-radio>
+                  <el-radio :label="false">{{ $t('backup.set_new_pwd') }}</el-radio>
+                </el-radio-group>
+                <div v-if="shouldUseExistingAutoBackupPassword" class="backup-status-box is-success mb-10">
+                  <div class="backup-status-content">
+                    <el-icon class="status-icon"><CircleCheck /></el-icon>
+                    <span class="status-text">{{ $t('backup.continue_use_old_pwd') }}</span>
+                  </div>
+                </div>
+            </template>
+            
+            <div v-if="!isEditing || !isAutoBackupPasswordSaved || !shouldUseExistingAutoBackupPassword" class="w-full">
+              <el-input v-model="form.autoBackupPassword" type="password" show-password :placeholder="$t('backup.input_encrypt_pwd')" />
+              <div class="backup-form-tip"><span class="text-danger">*</span> {{ $t('backup.password_length_req') }}</div>
             </div>
-          </div>
-        </el-form-item>
+          </el-form-item>
+        </template>
         <el-form-item :label="$t('backup.retain_count_label')" v-if="form.autoBackup">
           <el-input-number v-model="form.autoBackupRetain" :min="0" :max="999" :label="$t('backup.retain_count_label')"></el-input-number>
           <div class="backup-form-tip w-full">{{ $t('backup.retain_zero_tip') }}</div>
@@ -357,8 +416,9 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
 import { Plus, Edit, Delete, CircleCheck, CircleClose, Timer, Loading } from '@element-plus/icons-vue'
-import iconGoogle from '@/shared/components/icons/iconGoogle.vue'
-import iconMicrosoftAuth from '@/shared/components/icons/iconMicrosoftAuth.vue'
+import iconGoogleDrive from '@/shared/components/icons/iconGoogleDrive.vue'
+import iconOnedrive from '@/shared/components/icons/iconOnedrive.vue'
+import iconBaiduNetdisk from '@/shared/components/icons/iconBaiduNetdisk.vue'
 import { useLayoutStore } from '@/shared/stores/layoutStore'
 import { useBackupProviders } from '@/features/backup/composables/useBackupProviders'
 import { useBackupActions } from '@/features/backup/composables/useBackupActions'
@@ -368,10 +428,13 @@ const layoutStore = useLayoutStore()
 
 const {
   providers, isLoading, showConfigDialog, isEditing, isTesting, isSaving,
-  isEditingWebdavPwd, isEditingS3Secret, isEditingTelegramToken, isEditingGoogleDrive, isEditingOneDrive, form,
-  hasExistingAutoPwd, configUseExistingAutoPwd, fetchProviders, openAddDialog,
+  isEditingWebdavPwd, isEditingS3Secret, isEditingTelegramToken, form,
+  isAutoBackupPasswordSaved, shouldUseExistingAutoBackupPassword, fetchProviders, openAddDialog,
   editProvider, testConnection, saveProvider, deleteProvider,
-  startGoogleAuth, startMicrosoftAuth, handleAuthMessage, isAuthenticatingGoogle, isAuthenticatingMicrosoft, authStatus, authStatusMicrosoft, authErrorMessage, authErrorMessageMicrosoft,
+  startGoogleAuth, startMicrosoftAuth, startBaiduAuth, handleAuthMessage, 
+  isAuthenticatingGoogle, isAuthenticatingMicrosoft, isAuthenticatingBaidu,
+  authStatusGoogle, authStatusMicrosoft, authStatusBaidu, 
+  authErrorMessageGoogle, authErrorMessageMicrosoft, authErrorMessageBaidu,
   setupAuthListener, availableTypes
 } = useBackupProviders()
 
@@ -402,7 +465,8 @@ const getProviderTypeTag = (type) => {
     s3: 'warning',
     telegram: 'success',
     gdrive: 'danger',
-    onedrive: ''
+    onedrive: '',
+    baidu: 'primary'
   }
   return map[type] || 'info'
 }

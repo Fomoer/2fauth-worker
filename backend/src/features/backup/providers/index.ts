@@ -4,3 +4,4 @@ export * from '@/features/backup/providers/s3Provider';
 export * from '@/features/backup/providers/telegramProvider';
 export * from '@/features/backup/providers/googleDriveProvider';
 export * from '@/features/backup/providers/oneDriveProvider';
+export * from '@/features/backup/providers/baiduNetdiskProvider';
