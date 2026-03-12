@@ -23,6 +23,7 @@ export function useBackupProviders() {
     const isEditingWebdavPwd = ref(false)
     const isEditingS3Secret = ref(false)
     const isEditingTelegramToken = ref(false)
+    const isEditingEmailPwd = ref(false)
     const isAuthenticatingGoogle = ref(false)
     const isAuthenticatingMicrosoft = ref(false)
     const isAuthenticatingBaidu = ref(false)
@@ -37,9 +38,20 @@ export function useBackupProviders() {
     const authErrorMessageDropbox = ref('')
 
     const initialFormState = () => ({
-        type: 's3',
+        type: 'email',
         name: '',
-        config: { url: '', username: '', password: '', saveDir: '/2fauth-worker-backup', endpoint: '', bucket: '', region: 'auto', accessKeyId: '', secretAccessKey: '', botToken: '', chatId: '', refreshToken: '', folderId: '' },
+        config: {
+            // WebDAV
+            url: '', username: '', password: '', saveDir: '/2fauth-worker-backup',
+            // S3
+            endpoint: '', bucket: '', region: 'auto', accessKeyId: '', secretAccessKey: '',
+            // Telegram
+            botToken: '', chatId: '',
+            // OAuth (gdrive/onedrive/baidu/dropbox)
+            refreshToken: '', folderId: '',
+            // Email
+            smtpHost: '', smtpPort: '587', smtpSecure: false, smtpUser: '', smtpPassword: '', smtpFrom: '', smtpTo: ''
+        },
         autoBackup: false,
         autoBackupPassword: '',
         autoBackupRetain: 30
@@ -76,6 +88,7 @@ export function useBackupProviders() {
         isEditingWebdavPwd.value = false
         isEditingS3Secret.value = false
         isEditingTelegramToken.value = false
+        isEditingEmailPwd.value = false
         form.value = initialFormState()
         isAutoBackupPasswordSaved.value = false
         shouldUseExistingAutoBackupPassword.value = false
@@ -87,6 +100,7 @@ export function useBackupProviders() {
         isEditingWebdavPwd.value = false
         isEditingS3Secret.value = false
         isEditingTelegramToken.value = false
+        isEditingEmailPwd.value = false
         currentProviderId.value = provider.id
         form.value = JSON.parse(JSON.stringify({
             type: provider.type,
@@ -124,6 +138,11 @@ export function useBackupProviders() {
             if (!config.refreshToken) return t('backup.require_baidu_auth')
         } else if (form.value.type === 'dropbox') {
             if (!config.refreshToken) return t('backup.require_dropbox_auth')
+        } else if (form.value.type === 'email') {
+            if (!config.smtpHost) return t('backup.require_email_smtp_host')
+            if (!config.smtpUser) return t('backup.require_email_smtp_user')
+            if (!config.smtpPassword) return t('backup.require_email_smtp_password')
+            if (!config.smtpTo) return t('backup.require_email_smtp_to')
         }
 
         if (form.value.autoBackup) {
@@ -459,6 +478,7 @@ export function useBackupProviders() {
         isEditingWebdavPwd,
         isEditingS3Secret,
         isEditingTelegramToken,
+        isEditingEmailPwd,
         isAuthenticatingGoogle,
         isAuthenticatingMicrosoft,
         isAuthenticatingBaidu,

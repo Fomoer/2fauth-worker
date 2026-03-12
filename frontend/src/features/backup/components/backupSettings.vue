@@ -73,14 +73,15 @@
     <el-dialog v-model="showConfigDialog" :title="isEditing ? $t('backup.edit_source') : $t('backup.add_source')" :width="layoutStore.isMobile ? '90%' : '500px'" destroy-on-close>
       <el-form :model="form" label-position="top" ref="formRef">
         <el-form-item :label="$t('backup.type_label')">
-          <el-select v-model="form.type" :disabled="isEditing">
+          <el-select v-model="form.type" :placeholder="$t('backup.select_type')" class="w-full" :disabled="isEditing">
+            <el-option v-if="availableTypes.includes('email')" :label="$t('backup.type_email')" value="email" />
             <el-option v-if="availableTypes.includes('s3')" :label="$t('backup.type_s3')" value="s3" />
             <el-option v-if="availableTypes.includes('telegram')" :label="$t('backup.type_telegram')" value="telegram" />
             <el-option v-if="availableTypes.includes('webdav')" :label="$t('backup.type_webdav')" value="webdav" />
             <el-option v-if="availableTypes.includes('gdrive')" :label="$t('backup.type_gdrive')" value="gdrive" />
             <el-option v-if="availableTypes.includes('onedrive')" :label="$t('backup.type_onedrive')" value="onedrive" />
-            <el-option v-if="availableTypes.includes('baidu')" :label="$t('backup.type_baidu')" value="baidu" />
             <el-option v-if="availableTypes.includes('dropbox')" :label="$t('backup.type_dropbox')" value="dropbox" />
+            <el-option v-if="availableTypes.includes('baidu')" :label="$t('backup.type_baidu')" value="baidu" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('backup.name_label')">
@@ -384,6 +385,61 @@
             </div>
         </template>
 
+        <!-- Email (SMTP) 配置 -->
+        <template v-if="form.type === 'email'">
+          <el-alert type="info" :description="$t('backup.email_tip')" :closable="false" class="mb-15" show-icon />
+
+          <!-- SMTP 服务器 + 端口 -->
+          <el-form-item :label="$t('backup.email_smtp_host')">
+            <div class="flex gap-10" style="width:100%">
+              <el-input
+                v-model="form.config.smtpHost"
+                :placeholder="$t('backup.email_smtp_host_placeholder')"
+                style="flex:1"
+              />
+              <el-input-number
+                v-model="form.config.smtpPort"
+                :min="1"
+                :max="65535"
+                style="width: 110px"
+                controls-position="right"
+              />
+            </div>
+          </el-form-item>
+
+          <!-- 加密方式 -->
+          <el-form-item :label="$t('backup.email_smtp_secure')">
+            <el-radio-group v-model="form.config.smtpSecure" @change="handleSmtpSecureChange">
+              <el-radio :value="false">{{ $t('backup.email_smtp_secure_tls') }}</el-radio>
+              <el-radio :value="true">{{ $t('backup.email_smtp_secure_ssl') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <!-- 发件人账号 -->
+          <el-form-item :label="$t('backup.email_smtp_user')">
+            <el-input v-model="form.config.smtpUser" :placeholder="$t('backup.email_smtp_user_placeholder')" />
+          </el-form-item>
+
+          <!-- 授权码 / 密码 -->
+          <el-form-item :label="$t('backup.email_smtp_password')">
+            <div v-if="isEditing && !isEditingEmailPwd" class="flex flex-items-center flex-between bg-fill p-10 rounded-4 border-1 w-full h-32">
+              <span class="font-mono ls-2">******</span>
+              <el-button link type="primary" @click="isEditingEmailPwd = true; form.config.smtpPassword = ''">{{ $t('backup.modify') }}</el-button>
+            </div>
+            <el-input v-else v-model="form.config.smtpPassword" type="password" show-password />
+          </el-form-item>
+
+          <!-- 发件人昵称（可选） -->
+          <el-form-item :label="$t('backup.email_smtp_from')">
+            <el-input v-model="form.config.smtpFrom" :placeholder="$t('backup.email_smtp_from_placeholder')" />
+          </el-form-item>
+
+          <!-- 收件人邮箱 -->
+          <el-form-item :label="$t('backup.email_smtp_to')">
+            <el-input v-model="form.config.smtpTo" :placeholder="$t('backup.email_smtp_to_placeholder')" />
+          </el-form-item>
+        </template>
+
         <el-divider content-position="left">{{ $t('backup.auto_backup_config') }}</el-divider>
         <el-form-item :label="$t('backup.auto_backup')">
           <el-switch v-model="form.autoBackup" :active-text="$t('backup.switch_on')" :inactive-text="$t('backup.switch_off')" />
@@ -441,6 +497,15 @@
 
     <!-- 恢复列表弹窗 -->
     <el-dialog v-model="showRestoreListDialog" :title="$t('backup.select_restore_file')" :width="layoutStore.isMobile ? '95%' : '600px'">
+      <!-- Email 备份专用提示：该类型无法在线下载，引导用户从邮箱手动导入 -->
+      <el-alert
+        v-if="currentActionProvider?.type === 'email'"
+        :title="$t('backup.email_download_not_supported')"
+        type="warning"
+        show-icon
+        :closable="false"
+        class="mb-15"
+      />
       <el-table :data="backupFiles" v-loading="isLoadingFiles" height="300px" style="width: 100%">
         <el-table-column prop="filename" :label="$t('backup.filename')" show-overflow-tooltip />
         <el-table-column :label="$t('backup.size')" width="100">
@@ -485,10 +550,10 @@ const layoutStore = useLayoutStore()
 
 const {
   providers, isLoading, showConfigDialog, isEditing, isTesting, isSaving,
-  isEditingWebdavPwd, isEditingS3Secret, isEditingTelegramToken, form,
+  isEditingWebdavPwd, isEditingS3Secret, isEditingTelegramToken, isEditingEmailPwd, form,
   isAutoBackupPasswordSaved, shouldUseExistingAutoBackupPassword, fetchProviders, openAddDialog,
   editProvider, testConnection, saveProvider, deleteProvider,
-  startGoogleAuth, startMicrosoftAuth, startBaiduAuth, startDropboxAuth, handleAuthMessage, 
+  startGoogleAuth, startMicrosoftAuth, startBaiduAuth, startDropboxAuth, handleAuthMessage,
   isAuthenticatingGoogle, isAuthenticatingMicrosoft, isAuthenticatingBaidu, isAuthenticatingDropbox,
   authStatusGoogle, authStatusMicrosoft, authStatusBaidu, authStatusDropbox,
   authErrorMessageGoogle, authErrorMessageMicrosoft, authErrorMessageBaidu, authErrorMessageDropbox,
@@ -515,6 +580,20 @@ onUnmounted(() => {
   if (cleanupAuthListener) cleanupAuthListener()
 })
 
+const handleSmtpSecureChange = (val) => {
+  if (val) {
+    // SSL/TLS -> 465
+    if (!form.value.config.smtpPort || form.value.config.smtpPort === 587) {
+      form.value.config.smtpPort = 465
+    }
+  } else {
+    // STARTTLS -> 587
+    if (!form.value.config.smtpPort || form.value.config.smtpPort === 465) {
+      form.value.config.smtpPort = 587
+    }
+  }
+}
+
 
 const getProviderTypeTag = (type) => {
   const map = {
@@ -524,7 +603,8 @@ const getProviderTypeTag = (type) => {
     gdrive: 'danger',
     onedrive: 'success',
     baidu: 'warning',
-    dropbox: 'primary'
+    dropbox: 'primary',
+    email: 'info'
   }
   return map[type] || 'info'
 }

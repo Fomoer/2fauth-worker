@@ -53,12 +53,23 @@ CREATE TABLE IF NOT EXISTS auth_passkeys (
     last_used_at INTEGER
 );
 
+-- Email 备份历史记录表
+CREATE TABLE IF NOT EXISTS backup_email_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    provider_id INTEGER NOT NULL,
+    filename TEXT NOT NULL,
+    recipient TEXT NOT NULL,           -- 收件人邮箱地址
+    size INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
 -- 索引
 DROP INDEX IF EXISTS idx_vault_service;
 CREATE INDEX IF NOT EXISTS idx_vault_created_at ON vault(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_backup_providers_type ON backup_providers(type);
 CREATE INDEX IF NOT EXISTS idx_vault_service_created_at ON vault(service, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_backup_telegram_history_provider_id ON backup_telegram_history(provider_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_backup_email_history_provider_id ON backup_email_history(provider_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_passkeys_user_id ON auth_passkeys(user_id);
 
 -- Remove any existing duplicates before enforcing unique constraint; keep the earliest

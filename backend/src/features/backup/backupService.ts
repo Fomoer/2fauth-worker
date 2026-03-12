@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { EnvBindings, AppError } from '@/app/config';
 import { BackupRepository } from '@/shared/db/repositories/backupRepository';
 import { encryptData, decryptData, encryptBackupFile } from '@/shared/utils/crypto';
-import { BackupProvider, WebDavProvider, S3Provider, TelegramProvider, GoogleDriveProvider, OneDriveProvider, BaiduNetdiskProvider, DropboxProvider } from '@/features/backup/providers';
+import { BackupProvider, WebDavProvider, S3Provider, TelegramProvider, GoogleDriveProvider, OneDriveProvider, BaiduNetdiskProvider, DropboxProvider, EmailProvider } from '@/features/backup/providers';
 import { decryptField } from '@/shared/db/db';
 import { vault as vaultTable, backupProviders } from '@/shared/db/schema';
 
@@ -11,11 +11,15 @@ export class BackupService {
     private env: EnvBindings;
     private db: any;
 
-    constructor(env: EnvBindings) {
+    constructor(env: EnvBindings, lang: string = 'en-US') {
         this.env = env;
         this.db = env.DB;
         this.repository = new BackupRepository(env.DB);
+        // Normalize language (simple check: contains 'zh' -> 'zh-CN', else 'en-US')
+        this.lang = lang.toLowerCase().includes('zh') ? 'zh-CN' : 'en-US';
     }
+
+    private lang: string;
 
     private readonly MASK = '******';
     private readonly SENSITIVE_FIELDS: Record<string, string[]> = {
@@ -25,7 +29,8 @@ export class BackupService {
         gdrive: ['refreshToken'],
         onedrive: ['refreshToken'],
         baidu: ['refreshToken'],
-        dropbox: ['refreshToken']
+        dropbox: ['refreshToken'],
+        email: ['smtpPassword']
     };
 
     private maskConfigForFrontend(type: string, config: any) {
@@ -89,6 +94,8 @@ export class BackupService {
                 return new BaiduNetdiskProvider(config, this.env);
             case 'dropbox':
                 return new DropboxProvider(config, this.env);
+            case 'email':
+                return new EmailProvider(config, this.db, id, this.lang);
             default:
                 throw new AppError('provider_not_found', 400);
         }
@@ -117,6 +124,9 @@ export class BackupService {
         if (type === 'dropbox' && processed.refreshToken) {
             processed.refreshToken = await encryptData(processed.refreshToken, key);
         }
+        if (type === 'email' && processed.smtpPassword) {
+            processed.smtpPassword = await encryptData(processed.smtpPassword, key);
+        }
         return JSON.stringify(processed);
     }
 
@@ -142,6 +152,9 @@ export class BackupService {
         }
         if (type === 'dropbox' && config.refreshToken) {
             config.refreshToken = await decryptData(config.refreshToken, key);
+        }
+        if (type === 'email' && config.smtpPassword) {
+            config.smtpPassword = await decryptData(config.smtpPassword, key);
         }
         return config;
     }
@@ -335,6 +348,9 @@ export class BackupService {
         } catch (e: any) {
             if (e.message === 'oauth_token_revoked' || e.message?.includes('oauth_token_revoked')) {
                 throw new AppError('oauth_token_revoked', 401);
+            }
+            if (e.message === 'email_download_not_supported') {
+                throw new AppError('email_download_not_supported', 400);
             }
             throw new AppError(`download_failed: ${e.message}`, 500);
         }

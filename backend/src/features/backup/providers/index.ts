@@ -6,3 +6,4 @@ export * from '@/features/backup/providers/googleDriveProvider';
 export * from '@/features/backup/providers/oneDriveProvider';
 export * from '@/features/backup/providers/baiduNetdiskProvider';
 export * from '@/features/backup/providers/dropboxProvider';
+export * from '@/features/backup/providers/emailProvider';

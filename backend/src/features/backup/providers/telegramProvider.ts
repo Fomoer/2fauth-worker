@@ -33,7 +33,7 @@ export class TelegramProvider implements BackupProvider {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chat_id: this.chatId,
-                    text: '🔗 2FAuth Backup Connected / 备份源连接成功',
+                    text: '🔗 2FAuth Worker Backup Connected / 备份源连接成功',
                     disable_notification: true
                 })
             });

@@ -622,11 +622,11 @@ backups.use('*', authMiddleware);
 // =========================================================================
 
 backups.get('/providers', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const providers = await service.getProvidersList();
 
     // Check which providers are enabled via environment variables
-    const availableTypes = ['s3', 'telegram', 'webdav'];
+    const availableTypes = ['s3', 'telegram', 'webdav', 'email'];
     if (c.env.OAUTH_GOOGLE_CLIENT_ID && c.env.OAUTH_GOOGLE_CLIENT_SECRET) {
         availableTypes.push('gdrive');
     }
@@ -644,14 +644,14 @@ backups.get('/providers', async (c) => {
 });
 
 backups.post('/providers', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const data = await c.req.json();
     const id = await service.addProvider(data);
     return c.json({ success: true, id });
 });
 
 backups.put('/providers/:id', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const id = Number(c.req.param('id'));
     const data = await c.req.json();
     await service.updateProvider(id, data);
@@ -659,21 +659,21 @@ backups.put('/providers/:id', async (c) => {
 });
 
 backups.delete('/providers/:id', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const id = Number(c.req.param('id'));
     await service.deleteProvider(id);
     return c.json({ success: true });
 });
 
 backups.post('/providers/test', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const { type, config, id } = await c.req.json();
     await service.testConnection(type, config, id);
     return c.json({ success: true, message: 'Connection successful' });
 });
 
 backups.post('/providers/:id/backup', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const id = Number(c.req.param('id'));
     const body = await c.req.json();
     await service.executeManualBackup(id, body);
@@ -681,14 +681,14 @@ backups.post('/providers/:id/backup', async (c) => {
 });
 
 backups.get('/providers/:id/files', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const id = Number(c.req.param('id'));
     const files = await service.getFiles(id);
     return c.json({ success: true, files });
 });
 
 backups.post('/providers/:id/download', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const id = Number(c.req.param('id'));
     const { filename } = await c.req.json();
     const content = await service.downloadFile(id, filename);
@@ -696,7 +696,7 @@ backups.post('/providers/:id/download', async (c) => {
 });
 
 backups.post('/providers/:id/files/delete', async (c) => {
-    const service = new BackupService(c.env);
+    const service = new BackupService(c.env, c.req.header('Accept-Language'));
     const id = Number(c.req.param('id'));
     const { filename } = await c.req.json();
     await service.deleteFile(id, filename);

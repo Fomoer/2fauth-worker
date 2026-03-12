@@ -45,6 +45,16 @@ export const backupTelegramHistory = sqliteTable('backup_telegram_history', {
   createdAt: integer('created_at').notNull(),
 });
 
+// 5. Email 备份历史记录表
+export const backupEmailHistory = sqliteTable('backup_email_history', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  providerId: integer('provider_id').notNull(),
+  filename: text('filename').notNull(),
+  recipient: text('recipient').notNull(), // 收件人邮箱地址
+  size: integer('size').notNull(),
+  createdAt: integer('created_at').notNull(),
+});
+
 // 4. 通行密钥表 (Passkeys)
 export const authPasskeys = sqliteTable('auth_passkeys', {
   credentialId: text('credential_id').primaryKey(), // 唯一凭据 ID
@@ -63,3 +73,5 @@ export type BackupProvider = typeof backupProviders.$inferSelect;
 export type NewBackupProvider = typeof backupProviders.$inferInsert;
 export type BackupTelegramHistory = typeof backupTelegramHistory.$inferSelect;
 export type NewBackupTelegramHistory = typeof backupTelegramHistory.$inferInsert;
+export type BackupEmailHistory = typeof backupEmailHistory.$inferSelect;
+export type NewBackupEmailHistory = typeof backupEmailHistory.$inferInsert;
