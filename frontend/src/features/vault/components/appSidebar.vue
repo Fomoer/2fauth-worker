@@ -49,7 +49,7 @@
     <div class="sidebar-footer" :class="{ 'is-collapsed': isCollapse }">
       <el-button circle :icon="isCollapse ? Expand : Fold" @click="toggleCollapse" :title="isCollapse ? '展开' : '折叠'" />
       <el-button circle :icon="themeStore.isDark ? Sunny : Moon" @click="themeStore.toggleTheme" />
-      <el-button circle size="medium" :icon="iconLocales" :title="$i18n.locale === 'zh-CN' ? 'English' : '切换语言'" @click="toggleLanguage" />
+      <el-button circle size="default" :icon="iconLocales" :title="$i18n.locale === 'zh-CN' ? 'English' : '切换语言'" @click="toggleLanguage" />
       <el-button circle @click="handleLogout" :title="$t('menu.logout')">
         <el-icon><SwitchButton /></el-icon>
       </el-button>
@@ -128,9 +128,9 @@
       </el-menu>
 
       <div class="sidebar-footer" style="display: flex; gap: 15px; justify-content: center; padding: 20px 0;">
-        <el-button circle size="medium" :icon="themeStore.isDark ? Sunny : Moon" @click="themeStore.toggleTheme" />
-        <el-button circle size="medium" :icon="iconLocales" :title="$i18n.locale === 'zh-CN' ? 'English' : '切换语言'" @click="toggleLanguage" />
-        <el-button circle size="medium" @click="handleLogout" :title="$t('menu.logout')">
+        <el-button circle size="default" :icon="themeStore.isDark ? Sunny : Moon" @click="themeStore.toggleTheme" />
+        <el-button circle size="default" :icon="iconLocales" :title="$i18n.locale === 'zh-CN' ? 'English' : '切换语言'" @click="toggleLanguage" />
+        <el-button circle size="default" @click="handleLogout" :title="$t('menu.logout')">
           <el-icon><SwitchButton /></el-icon>
         </el-button>
       </div>
@@ -170,7 +170,7 @@ const themeStore = useThemeStore()
 const authUserStore = useAuthUserStore()
 const router = useRouter()
 
-const isCollapse = ref(localStorage.getItem('sidebar_collapse') === 'true')
+const isCollapse = ref(localStorage.getItem('sidebar_collapse') !== 'false')
 
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value

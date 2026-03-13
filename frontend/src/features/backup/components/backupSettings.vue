@@ -39,7 +39,7 @@
           <div class="card-content">
             <p class="backup-status-text">
               {{ $t('backup.last_backup') }} 
-              <span v-if="provider.lastBackupAt">{{ new Date(provider.lastBackupAt).toLocaleString() }}</span>
+              <span v-if="provider.lastBackupAt">{{ formatDate(provider.lastBackupAt) }}</span>
               <span v-else>{{ $t('backup.never_backed_up') }}</span>
               <el-tag v-if="provider.lastBackupStatus" size="small" :type="provider.lastBackupStatus === 'success' ? 'success' : 'danger'" class="ml-5">
                 {{ provider.lastBackupStatus }}
@@ -513,7 +513,11 @@
             {{ formatSize(scope.row.size) }}
           </template>
         </el-table-column>
-        <el-table-column prop="lastModified" :label="$t('backup.time')" width="180" />
+        <el-table-column :label="$t('backup.time')" width="180">
+          <template #default="scope">
+            {{ formatDate(scope.row.lastModified) }}
+          </template>
+        </el-table-column>
         <el-table-column :label="$t('backup.action')" width="100">
           <template #default="scope">
             <el-button link type="primary" @click="selectRestoreFile(scope.row)">{{ $t('backup.restore') }}</el-button>
@@ -597,14 +601,14 @@ const handleSmtpSecureChange = (val) => {
 
 const getProviderTypeTag = (type) => {
   const map = {
-    webdav: 'primary',
+    webdav: 'danger',
     s3: 'warning',
-    telegram: 'success',
-    gdrive: 'danger',
-    onedrive: 'success',
-    baidu: 'warning',
+    telegram: 'primary',
+    gdrive: 'success',
+    onedrive: 'primary',
+    baidu: 'primary',
     dropbox: 'primary',
-    email: 'info'
+    email: 'success'
   }
   return map[type] || 'info'
 }
@@ -615,5 +619,17 @@ const formatSize = (bytes) => {
   const sizes = ['B', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '-'
+  const date = new Date(dateStr)
+  const Y = date.getFullYear()
+  const M = String(date.getMonth() + 1).padStart(2, '0')
+  const D = String(date.getDate()).padStart(2, '0')
+  const h = String(date.getHours()).padStart(2, '0')
+  const m = String(date.getMinutes()).padStart(2, '0')
+  const s = String(date.getSeconds()).padStart(2, '0')
+  return `${Y}-${M}-${D} ${h}:${m}:${s}`
 }
 </script>

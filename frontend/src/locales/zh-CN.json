@@ -734,7 +734,7 @@
     },
     "security": {
         "management": "通行密钥管理",
-        "passkey_title": "通行密钥管理",
+        "passkey_title": "通行密钥",
         "passkey_desc": "通过生物识别（如指纹或面容）实现无密码登录，为您提供更安全、更快速的账户访问体验。",
         "passkey_list": "已绑定的通行密钥",
         "add_passkey": "添加通行密钥",

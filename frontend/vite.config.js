@@ -92,7 +92,14 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api/],
+        // 排除 API 和 Vite 开发环境下的内部路径，防止 Service Worker 拦截干扰
+        navigateFallbackDenylist: [
+          /^\/api/,
+          /\/@vite\//,
+          /\/@fs\//,
+          /\/@id\//,
+          /node_modules/
+        ],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/api'),

@@ -99,11 +99,6 @@
     transform: translateY(-50%);
 }
 
-html.dark .global-offline-banner {
-    background-color: rgba(230, 162, 60, 0.1);
-    border-bottom-color: rgba(230, 162, 60, 0.2);
-}
-
 /* 3. QrScanner Component */
 .qr-scanner-container {
     width: 100%;

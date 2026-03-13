@@ -64,9 +64,9 @@
               <el-collapse class="ecosystem-collapse">
                 <el-collapse-item name="1">
                   <template #title>
-                    <h4 class="group-title">
-                      <el-icon class="mr-8"><QuestionFilled /></el-icon> <strong>{{ $t('migration.ga_ms_import_guide') }}</strong>
-                    </h4>
+                    <div class="migration-guide">
+                      <strong>{{ $t('migration.ga_ms_import_guide') }}</strong>
+                    </div>
                   </template>
                   <div class="migration-ga-tip">
                     <span><el-icon><iconGoogleAuth /></el-icon> Google Authenticator</span>

@@ -38,40 +38,35 @@ const router = createRouter({
 })
 
 // 路由守卫：拦截未登录用户的访问
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   const authUserStore = useAuthUserStore()
 
   // 1. 检查内存中是否有用户信息 (乐观检查)
   let isAuthenticated = !!(authUserStore.userInfo && authUserStore.userInfo.id)
 
   // 2. 如果内存无状态，但目标页需要登录 OR 是仅游客页面(如登录页)，尝试通过 Cookie 恢复会话
-  // (Option 1B: 即使访问登录页，也先确认是否已登录，防止误判)
   if (!isAuthenticated && (to.meta.requiresAuth || to.meta.guestOnly)) {
     try {
       await authUserStore.fetchUserInfo()
       isAuthenticated = !!(authUserStore.userInfo && authUserStore.userInfo.id)
     } catch (e) {
-      // Handle the case where the application environment is unstable/not healthy
       if (e.isSecurity || e.message === 'Security Check Failed') {
-        next('/health')
-        return
+        return '/health'
       }
     }
   }
 
   // 3. 处理需要登录的页面
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login')
-    return
+    return '/login'
   }
 
-  // 4. 处理仅限游客的页面 (Option 2B: 已登录用户访问登录页则跳转首页)
+  // 4. 处理仅限游客的页面
   if (to.meta.guestOnly && isAuthenticated) {
-    next('/')
-    return
+    return '/'
   }
 
-  next()
+  return true
 })
 
 export default router
